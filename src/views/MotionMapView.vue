@@ -42,10 +42,20 @@
         @set-show-all-accel="mm.setShowAllAccel($event)"
         @set-show-labels="mm.setShowLabels($event)"
         @delete="mm.deleteDot($event)"
+        @clear="showClearConfirm = true"
         @undo="mm.undoAction()"
         @export="onExport"
       />
     </div>
+
+    <ConfirmDialog
+      :open="showClearConfirm"
+      title="Clear diagram"
+      message="This will remove all dots and reset settings. This action can be undone."
+      confirm-label="Clear"
+      @confirm="onClearConfirm"
+      @cancel="showClearConfirm = false"
+    />
   </div>
 </template>
 
@@ -56,6 +66,7 @@ import { useMotionMap } from '@/composables/useMotionMap'
 import { useExport } from '@/composables/useExport'
 import MMCanvas from '@/diagrams/motion-map/MMCanvas.vue'
 import MMSidebar from '@/diagrams/motion-map/MMSidebar.vue'
+import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 
 const router = useRouter()
 const mm = useMotionMap()
@@ -64,6 +75,7 @@ const { state, selectedId, selectedDot, canUndo } = mm
 const canvasRef = ref<InstanceType<typeof MMCanvas> | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
 const exporter = useExport(svgRef, 'motion-map.png')
+const showClearConfirm = ref(false)
 
 onMounted(() => {
   svgRef.value = canvasRef.value?.svgEl ?? null
@@ -74,12 +86,20 @@ async function onExport() {
   await exporter.exportPng()
 }
 
+function onClearConfirm() {
+  mm.clearAll()
+  showClearConfirm.value = false
+}
+
 function onKeyDown(e: KeyboardEvent) {
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
   if (e.key === 'Delete' || e.key === 'Backspace') {
     if (selectedId.value) mm.deleteDot(selectedId.value)
   }
-  if (e.key === 'Escape') selectedId.value = null
+  if (e.key === 'Escape') {
+    if (showClearConfirm.value) showClearConfirm.value = false
+    else selectedId.value = null
+  }
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
     e.preventDefault()
     mm.undoAction()

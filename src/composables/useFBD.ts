@@ -75,6 +75,12 @@ export function useFBD() {
     state.value = { ...state.value, showCrosshair: show }
   }
 
+  function clearAll() {
+    state.value = structuredClone(INITIAL_STATE)
+    selectedId.value = null
+    pushUndo(state.value)
+  }
+
   function undoAction() {
     const prev = undo()
     if (prev) {
@@ -99,6 +105,7 @@ export function useFBD() {
     setSnapEnabled,
     setShowGrid,
     setShowCrosshair,
+    clearAll,
     undoAction,
   }
 }

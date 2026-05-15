@@ -180,21 +180,30 @@
     </div>
 
     <!-- Footer -->
-    <div class="border-t border-border px-4 py-3 flex gap-2">
+    <div class="border-t border-border px-4 py-3 space-y-2">
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="flex-1 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-muted disabled:opacity-40 transition-colors"
+          :disabled="!canUndo"
+          @click="$emit('undo')"
+        >
+          ↩ Undo
+        </button>
+        <button
+          type="button"
+          class="flex-1 py-1.5 text-sm rounded-md bg-sky-500 hover:bg-sky-600 text-white font-medium transition-colors"
+          @click="$emit('export')"
+        >
+          Export PNG
+        </button>
+      </div>
       <button
         type="button"
-        class="flex-1 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-muted disabled:opacity-40 transition-colors"
-        :disabled="!canUndo"
-        @click="$emit('undo')"
+        class="w-full py-1.5 text-sm rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+        @click="$emit('clear')"
       >
-        ↩ Undo
-      </button>
-      <button
-        type="button"
-        class="flex-1 py-1.5 text-sm rounded-md bg-sky-500 hover:bg-sky-600 text-white font-medium transition-colors"
-        @click="$emit('export')"
-      >
-        Export PNG
+        Clear
       </button>
     </div>
   </aside>
@@ -223,6 +232,7 @@ defineEmits<{
   'set-show-all-accel': [show: boolean]
   'set-show-labels': [show: boolean]
   delete: [id: string]
+  clear: []
   undo: []
   export: []
 }>()

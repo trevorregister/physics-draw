@@ -42,10 +42,20 @@
         @set-snap="fbd.setSnapEnabled($event)"
         @set-grid="fbd.setShowGrid($event)"
         @set-crosshair="fbd.setShowCrosshair($event)"
+        @clear="showClearConfirm = true"
         @undo="fbd.undoAction()"
         @export="onExport"
       />
     </div>
+
+    <ConfirmDialog
+      :open="showClearConfirm"
+      title="Clear diagram"
+      message="This will remove all vectors. This action can be undone."
+      confirm-label="Clear"
+      @confirm="onClearConfirm"
+      @cancel="showClearConfirm = false"
+    />
   </div>
 </template>
 
@@ -56,6 +66,7 @@ import { useFBD } from '@/composables/useFBD'
 import { useExport } from '@/composables/useExport'
 import FBDCanvas from '@/diagrams/fbd/FBDCanvas.vue'
 import FBDSidebar from '@/diagrams/fbd/FBDSidebar.vue'
+import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 
 const router = useRouter()
 const fbd = useFBD()
@@ -64,6 +75,7 @@ const { state, selectedId, selectedVector, canUndo } = fbd
 const canvasRef = ref<InstanceType<typeof FBDCanvas> | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
 const exporter = useExport(svgRef, 'fbd-diagram.png')
+const showClearConfirm = ref(false)
 
 onMounted(() => {
   svgRef.value = canvasRef.value?.svgEl ?? null
@@ -74,12 +86,20 @@ async function onExport() {
   await exporter.exportPng()
 }
 
+function onClearConfirm() {
+  fbd.clearAll()
+  showClearConfirm.value = false
+}
+
 function onKeyDown(e: KeyboardEvent) {
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
   if (e.key === 'Delete' || e.key === 'Backspace') {
     if (selectedId.value) fbd.deleteVector(selectedId.value)
   }
-  if (e.key === 'Escape') selectedId.value = null
+  if (e.key === 'Escape') {
+    if (showClearConfirm.value) showClearConfirm.value = false
+    else selectedId.value = null
+  }
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
     e.preventDefault()
     fbd.undoAction()

@@ -33,14 +33,24 @@ export function useMotionMap() {
       state.value.dots.length === 0
         ? 0
         : Math.max(...state.value.dots.map((d) => d.timeIndex)) + 1
+    const prevDot = state.value.dots.find((d) => d.timeIndex === nextTime - 1)
+    const autoDir: 1 | -1 = prevDot
+      ? gridIndex >= prevDot.gridIndex ? 1 : -1
+      : 1
+    // Update the previous dot to point toward the new dot
+    const updatedDots = prevDot
+      ? state.value.dots.map((d) =>
+          d.id === prevDot.id ? { ...d, velocity: { ...d.velocity, direction: autoDir } } : d
+        )
+      : state.value.dots
     const dot: MMDot = {
       id: crypto.randomUUID(),
       gridIndex,
       timeIndex: nextTime,
-      velocity: { direction: 1, visible: true },
+      velocity: { direction: autoDir, visible: true },
       acceleration: { magnitude: 0, direction: 1, visible: true },
     }
-    state.value = { ...state.value, dots: [...state.value.dots, dot] }
+    state.value = { ...state.value, dots: [...updatedDots, dot] }
     pushUndo(state.value)
     selectedId.value = dot.id
   }
@@ -109,6 +119,12 @@ export function useMotionMap() {
     state.value = { ...state.value, velocityScale: Math.max(0.1, Math.min(5, scale)) }
   }
 
+  function clearAll() {
+    state.value = structuredClone(INITIAL_STATE)
+    selectedId.value = null
+    pushUndo(state.value)
+  }
+
   function undoAction() {
     const prev = undo()
     if (prev) {
@@ -136,6 +152,7 @@ export function useMotionMap() {
     setShowAllAccel,
     setShowLabels,
     setVelocityScale,
+    clearAll,
     undoAction,
   }
 }
