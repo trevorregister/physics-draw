@@ -10,7 +10,7 @@ const INITIAL_STATE: MMState = {
   showAllVelocity: true,
   showAllAccel: true,
   showLabels: true,
-  velocityScale: 1,
+  velocityScale: 0.75,
   dots: [],
 }
 
