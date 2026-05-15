@@ -21,7 +21,7 @@
           ref="canvasRef"
           :state="state"
           :selected-id="selectedId"
-          @add-dot="mm.addDot($event)"
+          @add-dot="(gi, lo) => mm.addDot(gi, lo)"
           @select="(id) => (selectedId = id)"
         />
       </div>

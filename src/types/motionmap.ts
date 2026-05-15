@@ -4,6 +4,7 @@ export type MMPositiveDirection = 'right' | 'left' | 'up' | 'down'
 export interface MMDot {
   id: string
   gridIndex: number
+  laneOffset: number
   timeIndex: number
   velocity: {
     direction: 1 | -1

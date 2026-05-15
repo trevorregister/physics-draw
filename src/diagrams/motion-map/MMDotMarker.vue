@@ -1,5 +1,18 @@
 <template>
   <g style="cursor: pointer;" @click.stop="$emit('select', dot.id)">
+    <!-- Dashed connector from off-axis dot to axis -->
+    <line
+      v-if="dot.laneOffset !== 0"
+      :x1="dotX"
+      :y1="dotY"
+      :x2="isHorizontal ? dotX : baseline"
+      :y2="isHorizontal ? baseline : dotY"
+      stroke="#cbd5e1"
+      stroke-width="1"
+      stroke-dasharray="4,3"
+      pointer-events="none"
+    />
+
     <!-- Velocity arrow (originates from dot, parallel to axis) -->
     <line
       v-if="showVelocity && velocityLength > 0"
@@ -13,7 +26,7 @@
       pointer-events="none"
     />
 
-    <!-- Acceleration arrow (below/left of axis) -->
+    <!-- Acceleration arrow (below/left of axis, anchored to axis projection) -->
     <line
       v-if="showAccel && dot.acceleration.magnitude > 0"
       :x1="accelBaseX"
@@ -83,17 +96,17 @@ function toSubscript(n: number): string {
 }
 
 const subscript = computed(() => toSubscript(props.dot.timeIndex))
-
 const isHorizontal = computed(() => props.orientation === 'horizontal')
 
+// Lane height equals gridSpacing — one lane = one grid unit perpendicular to axis
 const dotX = computed(() =>
   isHorizontal.value
     ? props.canvasW / 2 + props.dot.gridIndex * props.gridSpacing
-    : props.baseline
+    : props.baseline + props.dot.laneOffset * props.gridSpacing
 )
 const dotY = computed(() =>
   isHorizontal.value
-    ? props.baseline
+    ? props.baseline - props.dot.laneOffset * props.gridSpacing
     : props.canvasH / 2 + props.dot.gridIndex * props.gridSpacing
 )
 
@@ -102,7 +115,7 @@ const velDelta = computed(() => props.dot.velocity.direction * props.velocityLen
 const velTipX = computed(() => (isHorizontal.value ? dotX.value + velDelta.value : dotX.value))
 const velTipY = computed(() => (isHorizontal.value ? dotY.value : dotY.value + velDelta.value))
 
-// Acceleration: below axis (horizontal) or left of axis (vertical)
+// Acceleration: anchored to axis projection of the dot (same gridIndex position on axis)
 const accelDelta = computed(
   () => props.dot.acceleration.direction * props.dot.acceleration.magnitude * props.gridSpacing
 )
@@ -119,8 +132,15 @@ const accelTipY = computed(() =>
   isHorizontal.value ? props.baseline + ACCEL_OFFSET : dotY.value + accelDelta.value
 )
 
-// Label: below dot for horizontal, left for vertical
+// Time label: placed to avoid dashed connector
+// Horizontal above axis (laneOffset > 0): label above dot
+// Otherwise: label below dot (horizontal) or left (vertical)
 const labelX = computed(() => (isHorizontal.value ? dotX.value : dotX.value - 14))
-const labelY = computed(() => (isHorizontal.value ? dotY.value + 20 : dotY.value))
+const labelY = computed(() => {
+  if (isHorizontal.value) {
+    return props.dot.laneOffset > 0 ? dotY.value - 14 : dotY.value + 20
+  }
+  return dotY.value
+})
 const labelAnchor = computed(() => (isHorizontal.value ? 'middle' : 'end'))
 </script>

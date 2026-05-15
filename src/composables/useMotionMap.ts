@@ -23,8 +23,10 @@ export function useMotionMap() {
     state.value.dots.find((d) => d.id === selectedId.value) ?? null
   )
 
-  function addDot(gridIndex: number) {
-    const existing = state.value.dots.find((d) => d.gridIndex === gridIndex)
+  function addDot(gridIndex: number, laneOffset: number = 0) {
+    const existing = state.value.dots.find(
+      (d) => d.gridIndex === gridIndex && d.laneOffset === laneOffset
+    )
     if (existing) {
       selectedId.value = existing.id
       return
@@ -34,18 +36,24 @@ export function useMotionMap() {
         ? 0
         : Math.max(...state.value.dots.map((d) => d.timeIndex)) + 1
     const prevDot = state.value.dots.find((d) => d.timeIndex === nextTime - 1)
+    const prevPrevDot = state.value.dots.find((d) => d.timeIndex === nextTime - 2)
     const autoDir: 1 | -1 = prevDot
       ? gridIndex >= prevDot.gridIndex ? 1 : -1
       : 1
-    // Update the previous dot to point toward the new dot
-    const updatedDots = prevDot
+    // Update the immediately preceding dot's direction only when it has no directional
+    // information of its own — i.e. it was stacked (same gridIndex as its predecessor)
+    // or it is the very first dot. Directed dots keep their own direction.
+    const prevDotUndirected =
+      prevDot && (!prevPrevDot || prevDot.gridIndex === prevPrevDot.gridIndex)
+    const updatedDots = prevDotUndirected
       ? state.value.dots.map((d) =>
-          d.id === prevDot.id ? { ...d, velocity: { ...d.velocity, direction: autoDir } } : d
+          d.id === prevDot!.id ? { ...d, velocity: { ...d.velocity, direction: autoDir } } : d
         )
       : state.value.dots
     const dot: MMDot = {
       id: crypto.randomUUID(),
       gridIndex,
+      laneOffset,
       timeIndex: nextTime,
       velocity: { direction: autoDir, visible: true },
       acceleration: { magnitude: 0, direction: 1, visible: true },

@@ -148,7 +148,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'add-dot': [gridIndex: number]
+  'add-dot': [gridIndex: number, laneOffset: number]
   select: [id: string | null]
 }>()
 
@@ -162,12 +162,12 @@ const svgEl = ref<SVGSVGElement | null>(null)
 
 const isHorizontal = computed(() => props.state.orientation === 'horizontal')
 
-const sortedByGrid = computed(() =>
-  [...props.state.dots].sort((a, b) => a.gridIndex - b.gridIndex)
+const sortedByTime = computed(() =>
+  [...props.state.dots].sort((a, b) => a.timeIndex - b.timeIndex)
 )
 
 function velocityLengthForDot(dot: MMDot): number {
-  const sorted = sortedByGrid.value
+  const sorted = sortedByTime.value
   const gs = props.state.gridSpacing
   const scale = props.state.velocityScale
   if (sorted.length <= 1) return gs * scale
@@ -216,11 +216,16 @@ function onCanvasClick(e: MouseEvent) {
   const maxIdx = Math.floor(((isHorizontal.value ? W : H) / 2 - PADDING) / gs)
   const gridIndex = Math.max(-maxIdx, Math.min(maxIdx, Math.round((rawAxis - center) / gs)))
 
-  const existing = props.state.dots.find((d) => d.gridIndex === gridIndex)
+  const rawLane = isHorizontal.value ? (BASELINE_Y - y) / gs : (x - BASELINE_X) / gs
+  const laneOffset = Math.round(rawLane)
+
+  const existing = props.state.dots.find(
+    (d) => d.gridIndex === gridIndex && d.laneOffset === laneOffset
+  )
   if (existing) {
     emit('select', existing.id)
   } else {
-    emit('add-dot', gridIndex)
+    emit('add-dot', gridIndex, laneOffset)
   }
 }
 
