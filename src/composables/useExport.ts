@@ -50,6 +50,7 @@ export function useExport(svgRef: Ref<SVGSVGElement | null>, filename: string) {
 
     // Clone SVG without foreignObjects so the SVG blob renders cleanly
     const clone = svg.cloneNode(true) as SVGSVGElement
+    clone.querySelectorAll('[data-no-export="true"]').forEach(el => el.remove())
     clone.querySelectorAll('foreignObject').forEach(fo => fo.remove())
 
     const vb = svg.viewBox.baseVal

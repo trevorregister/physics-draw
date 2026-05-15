@@ -1,19 +1,29 @@
+export type MMOrientation = 'horizontal' | 'vertical'
+export type MMPositiveDirection = 'right' | 'left' | 'up' | 'down'
+
 export interface MMDot {
   id: string
-  position: number
-  velocityMag: number
-  velocityDir: 1 | -1
+  gridIndex: number
+  timeIndex: number
+  velocity: {
+    direction: 1 | -1
+    visible: boolean
+  }
+  acceleration: {
+    magnitude: number
+    direction: 1 | -1
+    visible: boolean
+  }
 }
-
-export type MMOrientation = 'horizontal' | 'vertical'
 
 export interface MMState {
   orientation: MMOrientation
-  dots: MMDot[]
-  accelMag: number
-  accelDir: 1 | -1
-  showVelocity: boolean
-  showAccel: boolean
+  positiveDirection: MMPositiveDirection
+  gridSpacing: number
+  showGrid: boolean
+  showAllVelocity: boolean
+  showAllAccel: boolean
   showLabels: boolean
-  snapEnabled: boolean
+  velocityScale: number
+  dots: MMDot[]
 }

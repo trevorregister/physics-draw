@@ -21,10 +21,7 @@
           ref="canvasRef"
           :state="state"
           :selected-id="selectedId"
-          :sorted-dots="sortedDots"
           @add-dot="mm.addDot($event)"
-          @update-dot="(id, pos) => mm.updateDotPosition(id, pos)"
-          @commit-dot="mm.commitDotUpdate()"
           @select="(id) => (selectedId = id)"
         />
       </div>
@@ -33,17 +30,18 @@
         :state="state"
         :selected-id="selectedId"
         :selected-dot="selectedDot"
-        :sorted-dots="sortedDots"
         :can-undo="canUndo"
         @set-orientation="mm.setOrientation($event)"
-        @set-show-velocity="mm.setShowVelocity($event)"
-        @set-show-accel="mm.setShowAccel($event)"
+        @set-positive-direction="mm.setPositiveDirection($event)"
+        @set-grid-spacing="mm.setGridSpacing($event)"
+        @set-show-grid="mm.setShowGrid($event)"
+        @set-velocity-scale="mm.setVelocityScale($event)"
+        @update-velocity="(id, vel) => mm.updateDotVelocity(id, vel)"
+        @update-acceleration="(id, accel) => mm.updateDotAcceleration(id, accel)"
+        @set-show-all-velocity="mm.setShowAllVelocity($event)"
+        @set-show-all-accel="mm.setShowAllAccel($event)"
         @set-show-labels="mm.setShowLabels($event)"
-        @set-snap="mm.setSnapEnabled($event)"
-        @set-accel="(mag, dir) => mm.setAccel(mag, dir)"
-        @update-velocity="(id, mag, dir) => mm.updateDotVelocity(id, mag, dir)"
         @delete="mm.deleteDot($event)"
-        @select="(id) => (selectedId = id)"
         @undo="mm.undoAction()"
         @export="onExport"
       />
@@ -61,7 +59,7 @@ import MMSidebar from '@/diagrams/motion-map/MMSidebar.vue'
 
 const router = useRouter()
 const mm = useMotionMap()
-const { state, selectedId, selectedDot, sortedDots, canUndo } = mm
+const { state, selectedId, selectedDot, canUndo } = mm
 
 const canvasRef = ref<InstanceType<typeof MMCanvas> | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)

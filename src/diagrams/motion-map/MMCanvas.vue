@@ -6,131 +6,200 @@
       width="100%"
       height="100%"
       class="select-none"
-      style="touch-action: none;"
-      @pointermove="onPointerMove"
-      @pointerup="onPointerUp"
-      @pointerleave="onPointerUp"
+      style="touch-action: none; cursor: crosshair;"
+      @click="onCanvasClick"
     >
-      <!-- Baseline -->
+      <defs>
+        <marker
+          id="mm-vel-arrow"
+          markerWidth="8" markerHeight="6"
+          refX="7" refY="3"
+          orient="auto"
+        >
+          <polygon points="0 0, 8 3, 0 6" fill="#1e293b" />
+        </marker>
+        <marker
+          id="mm-accel-arrow"
+          markerWidth="8" markerHeight="6"
+          refX="7" refY="3"
+          orient="auto"
+        >
+          <polygon points="0 0, 8 3, 0 6" fill="#f43f5e" />
+        </marker>
+      </defs>
+
+      <!-- Axis line -->
       <line
         v-if="isHorizontal"
         :x1="PADDING"
-        :y1="BASELINE"
+        :y1="BASELINE_Y"
         :x2="W - PADDING"
-        :y2="BASELINE"
-        stroke="#cbd5e1"
+        :y2="BASELINE_Y"
+        stroke="#94a3b8"
         stroke-width="2"
         stroke-linecap="round"
-        style="cursor: crosshair;"
-        @click="onBaselineClick"
       />
       <line
         v-else
-        :x1="BASELINE"
+        :x1="BASELINE_X"
         :y1="PADDING"
-        :x2="BASELINE"
+        :x2="BASELINE_X"
         :y2="H - PADDING"
-        stroke="#cbd5e1"
+        stroke="#94a3b8"
         stroke-width="2"
         stroke-linecap="round"
-        style="cursor: crosshair;"
-        @click="onBaselineClick"
       />
 
-      <!-- Axis end arrows -->
+      <!-- Axis arrowhead at positive end -->
       <polygon
+        v-if="isHorizontal && state.positiveDirection === 'right'"
+        :points="`${W - PADDING - 1} ${BASELINE_Y - 5}, ${W - PADDING + 9} ${BASELINE_Y}, ${W - PADDING - 1} ${BASELINE_Y + 5}`"
+        fill="#94a3b8"
+      />
+      <polygon
+        v-else-if="isHorizontal && state.positiveDirection === 'left'"
+        :points="`${PADDING + 1} ${BASELINE_Y - 5}, ${PADDING - 9} ${BASELINE_Y}, ${PADDING + 1} ${BASELINE_Y + 5}`"
+        fill="#94a3b8"
+      />
+      <polygon
+        v-else-if="!isHorizontal && state.positiveDirection === 'up'"
+        :points="`${BASELINE_X - 5} ${PADDING + 1}, ${BASELINE_X} ${PADDING - 9}, ${BASELINE_X + 5} ${PADDING + 1}`"
+        fill="#94a3b8"
+      />
+      <polygon
+        v-else-if="!isHorizontal && state.positiveDirection === 'down'"
+        :points="`${BASELINE_X - 5} ${H - PADDING - 1}, ${BASELINE_X} ${H - PADDING + 9}, ${BASELINE_X + 5} ${H - PADDING - 1}`"
+        fill="#94a3b8"
+      />
+
+      <!-- "+" label at positive end -->
+      <text
         v-if="isHorizontal"
-        :points="`${W - PADDING} ${BASELINE - 5}, ${W - PADDING + 10} ${BASELINE}, ${W - PADDING} ${BASELINE + 5}`"
-        fill="#cbd5e1"
-      />
-      <polygon
+        :x="state.positiveDirection === 'right' ? W - PADDING + 14 : PADDING - 14"
+        :y="BASELINE_Y + 4"
+        :text-anchor="state.positiveDirection === 'right' ? 'start' : 'end'"
+        font-size="13"
+        font-weight="600"
+        fill="#64748b"
+        pointer-events="none"
+      >+</text>
+      <text
         v-else
-        :points="`${BASELINE - 5} ${PADDING}, ${BASELINE} ${PADDING - 10}, ${BASELINE + 5} ${PADDING}`"
-        fill="#cbd5e1"
-      />
+        :x="BASELINE_X + 8"
+        :y="state.positiveDirection === 'up' ? PADDING - 14 : H - PADDING + 18"
+        text-anchor="start"
+        font-size="13"
+        font-weight="600"
+        fill="#64748b"
+        pointer-events="none"
+      >+</text>
 
-      <!-- Dots -->
+      <!-- Grid tick marks (stripped on export) -->
+      <g v-if="state.showGrid" data-no-export="true">
+        <line
+          v-for="idx in gridIndices"
+          :key="idx"
+          v-bind="tickAttrs(idx)"
+          stroke="#cbd5e1"
+          stroke-width="1"
+        />
+      </g>
+
+      <!-- Dot markers -->
       <MMDotMarker
-        v-for="(dot, i) in sortedDots"
+        v-for="dot in state.dots"
         :key="dot.id"
         :dot="dot"
-        :index="i"
         :orientation="state.orientation"
-        :baseline="BASELINE"
+        :grid-spacing="state.gridSpacing"
+        :canvas-w="W"
+        :canvas-h="H"
+        :baseline="isHorizontal ? BASELINE_Y : BASELINE_X"
+        :velocity-length="velocityLengthForDot(dot)"
         :selected="selectedId === dot.id"
-        :show-velocity="state.showVelocity"
+        :show-velocity="state.showAllVelocity && dot.velocity.visible"
+        :show-accel="state.showAllAccel && dot.acceleration.visible"
         :show-label="state.showLabels"
         @select="$emit('select', $event)"
-        @drag-start="onDotDragStart"
-      />
-
-      <!-- Acceleration arrow -->
-      <MMAccelArrow
-        v-if="state.showAccel && sortedDots.length > 0"
-        :orientation="state.orientation"
-        :baseline="BASELINE"
-        :center-pos="centerPos"
-        :accel-mag="state.accelMag"
-        :accel-dir="state.accelDir"
-        :accel-side="accelSide"
       />
 
       <!-- Click hint when empty -->
       <text
-        v-if="sortedDots.length === 0"
+        v-if="state.dots.length === 0"
         :x="W / 2"
-        :y="isHorizontal ? BASELINE - 20 : W / 2"
+        :y="isHorizontal ? BASELINE_Y - 30 : H / 2 - 30"
         text-anchor="middle"
         font-size="13"
         fill="#94a3b8"
         pointer-events="none"
-      >Click on the baseline to place dots</text>
+      >Click anywhere to place dots on the axis</text>
     </svg>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { MMState, MMDot } from '@/types'
-import { snapToIncrement } from '@/composables/useSnap'
+import type { MMDot, MMState } from '@/types'
 import MMDotMarker from './MMDotMarker.vue'
-import MMAccelArrow from './MMAccelArrow.vue'
 
 const props = defineProps<{
   state: MMState
   selectedId: string | null
-  sortedDots: MMDot[]
 }>()
 
 const emit = defineEmits<{
-  'add-dot': [position: number]
-  'update-dot': [id: string, position: number]
-  'commit-dot': []
+  'add-dot': [gridIndex: number]
   select: [id: string | null]
 }>()
 
 const W = 800
 const H = 500
 const PADDING = 60
-const BASELINE = 260  // y for horizontal, x for vertical
+const BASELINE_Y = 250
+const BASELINE_X = 400
 
 const svgEl = ref<SVGSVGElement | null>(null)
 
 const isHorizontal = computed(() => props.state.orientation === 'horizontal')
 
-// Center of all dots for acceleration arrow anchor
-const centerPos = computed(() => {
-  if (props.sortedDots.length === 0) return W / 2
-  const positions = props.sortedDots.map((d) => d.position)
-  return (Math.min(...positions) + Math.max(...positions)) / 2
-})
-
-// Accel arrow side: below baseline for horizontal (higher SVG y), left of baseline for vertical (lower SVG x)
-const accelSide = computed(() =>
-  isHorizontal.value ? BASELINE + 60 : BASELINE - 60
+const sortedByGrid = computed(() =>
+  [...props.state.dots].sort((a, b) => a.gridIndex - b.gridIndex)
 )
 
-function toSVGCoords(e: PointerEvent | MouseEvent): { x: number; y: number } {
+function velocityLengthForDot(dot: MMDot): number {
+  const sorted = sortedByGrid.value
+  const gs = props.state.gridSpacing
+  const scale = props.state.velocityScale
+  if (sorted.length <= 1) return gs * scale
+  const idx = sorted.findIndex((d) => d.id === dot.id)
+  const next = sorted[idx + 1]
+  const prev = sorted[idx - 1]
+  const spacing = next
+    ? Math.abs(next.gridIndex - dot.gridIndex)
+    : Math.abs(dot.gridIndex - prev!.gridIndex)
+  return spacing * gs * scale
+}
+
+const gridIndices = computed(() => {
+  const gs = props.state.gridSpacing
+  const halfAxis = (isHorizontal.value ? W : H) / 2 - PADDING
+  const half = Math.floor(halfAxis / gs)
+  const indices: number[] = []
+  for (let i = -half; i <= half; i++) indices.push(i)
+  return indices
+})
+
+function tickAttrs(idx: number): Record<string, number> {
+  if (isHorizontal.value) {
+    const x = W / 2 + idx * props.state.gridSpacing
+    return { x1: x, y1: BASELINE_Y - 6, x2: x, y2: BASELINE_Y + 6 }
+  } else {
+    const y = H / 2 + idx * props.state.gridSpacing
+    return { x1: BASELINE_X - 6, y1: y, x2: BASELINE_X + 6, y2: y }
+  }
+}
+
+function toSVGCoords(e: MouseEvent): { x: number; y: number } {
   const svg = svgEl.value!
   const pt = svg.createSVGPoint()
   pt.x = e.clientX
@@ -139,42 +208,19 @@ function toSVGCoords(e: PointerEvent | MouseEvent): { x: number; y: number } {
   return { x: svgP.x, y: svgP.y }
 }
 
-function onBaselineClick(e: MouseEvent) {
+function onCanvasClick(e: MouseEvent) {
   const { x, y } = toSVGCoords(e)
-  const rawPos = isHorizontal.value ? x : y
-  let pos = rawPos
-  if (props.state.snapEnabled) pos = snapToIncrement(rawPos, 10)
-  pos = isHorizontal.value
-    ? Math.max(PADDING, Math.min(W - PADDING, pos))
-    : Math.max(PADDING, Math.min(H - PADDING, pos))
-  emit('add-dot', pos)
-}
+  const gs = props.state.gridSpacing
+  const rawAxis = isHorizontal.value ? x : y
+  const center = isHorizontal.value ? W / 2 : H / 2
+  const maxIdx = Math.floor(((isHorizontal.value ? W : H) / 2 - PADDING) / gs)
+  const gridIndex = Math.max(-maxIdx, Math.min(maxIdx, Math.round((rawAxis - center) / gs)))
 
-// Drag state
-const dragDotId = ref<string | null>(null)
-
-function onDotDragStart(e: PointerEvent, id: string) {
-  e.preventDefault()
-  dragDotId.value = id
-  svgEl.value?.setPointerCapture(e.pointerId)
-}
-
-function onPointerMove(e: PointerEvent) {
-  if (!dragDotId.value) return
-  const { x, y } = toSVGCoords(e)
-  const rawPos = isHorizontal.value ? x : y
-  let pos = rawPos
-  if (props.state.snapEnabled) pos = snapToIncrement(rawPos, 10)
-  pos = isHorizontal.value
-    ? Math.max(PADDING, Math.min(W - PADDING, pos))
-    : Math.max(PADDING, Math.min(H - PADDING, pos))
-  emit('update-dot', dragDotId.value, pos)
-}
-
-function onPointerUp() {
-  if (dragDotId.value) {
-    dragDotId.value = null
-    emit('commit-dot')
+  const existing = props.state.dots.find((d) => d.gridIndex === gridIndex)
+  if (existing) {
+    emit('select', existing.id)
+  } else {
+    emit('add-dot', gridIndex)
   }
 }
 

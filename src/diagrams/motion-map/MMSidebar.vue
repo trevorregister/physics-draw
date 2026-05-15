@@ -4,146 +4,179 @@
       <h2 class="text-sm font-semibold text-foreground">Motion Map</h2>
     </div>
 
-    <div class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-      <!-- Orientation -->
-      <div>
-        <p class="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Orientation</p>
-        <div class="flex gap-1.5">
-          <button
-            v-for="o in ['horizontal', 'vertical']"
-            :key="o"
-            type="button"
-            class="flex-1 py-1.5 text-xs rounded-md border transition-colors capitalize"
-            :class="state.orientation === o
-              ? 'bg-sky-500 border-sky-500 text-white'
-              : 'bg-background border-border text-foreground hover:bg-muted'"
-            @click="$emit('set-orientation', o as MMOrientation)"
-          >{{ o }}</button>
-        </div>
-        <p v-if="state.dots.length" class="text-xs text-muted-foreground mt-1">
-          Changing orientation clears dots.
-        </p>
-      </div>
+    <div class="flex-1 overflow-y-auto px-4 py-3 space-y-5">
 
-      <!-- Show/hide toggles -->
-      <div class="space-y-2">
-        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Display</p>
-        <label v-for="toggle in TOGGLES" :key="toggle.key" class="flex items-center justify-between text-sm cursor-pointer">
-          <span class="text-foreground">{{ toggle.label }}</span>
-          <button
-            type="button"
-            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
-            :class="(state as any)[toggle.key] ? 'bg-sky-500' : 'bg-muted'"
-            @click="$emit(toggle.event as any, !(state as any)[toggle.key])"
-          >
-            <span
-              class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform"
-              :class="(state as any)[toggle.key] ? 'translate-x-5' : 'translate-x-0.5'"
-            />
-          </button>
-        </label>
-        <label class="flex items-center justify-between text-sm cursor-pointer">
-          <span class="text-foreground">Snap</span>
-          <button
-            type="button"
-            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
-            :class="state.snapEnabled ? 'bg-sky-500' : 'bg-muted'"
-            @click="$emit('set-snap', !state.snapEnabled)"
-          >
-            <span
-              class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform"
-              :class="state.snapEnabled ? 'translate-x-5' : 'translate-x-0.5'"
-            />
-          </button>
-        </label>
-      </div>
+      <!-- Diagram Settings -->
+      <section class="space-y-3">
+        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Diagram Settings</p>
 
-      <!-- Acceleration controls -->
-      <div>
-        <p class="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Acceleration</p>
-        <div class="space-y-2">
+        <!-- Orientation -->
+        <div>
+          <p class="text-xs text-muted-foreground mb-1.5">Orientation</p>
           <div class="flex gap-1.5">
             <button
-              v-for="dir in [{ label: '+ (right/up)', val: 1 }, { label: '− (left/down)', val: -1 }]"
+              v-for="o in ['horizontal', 'vertical']"
+              :key="o"
+              type="button"
+              class="flex-1 py-1.5 text-xs rounded-md border transition-colors capitalize"
+              :class="state.orientation === o
+                ? 'bg-sky-500 border-sky-500 text-white'
+                : 'bg-background border-border text-foreground hover:bg-muted'"
+              @click="$emit('set-orientation', o as MMOrientation)"
+            >{{ o }}</button>
+          </div>
+          <p v-if="state.dots.length" class="text-xs text-muted-foreground mt-1">
+            Changing orientation clears all dots.
+          </p>
+        </div>
+
+        <!-- Positive direction -->
+        <div>
+          <p class="text-xs text-muted-foreground mb-1.5">Positive direction (label only)</p>
+          <div class="flex gap-1.5">
+            <button
+              v-for="dir in positiveDirectionOptions"
+              :key="dir.val"
+              type="button"
+              class="flex-1 py-1.5 text-xs rounded-md border transition-colors"
+              :class="state.positiveDirection === dir.val
+                ? 'bg-sky-500 border-sky-500 text-white'
+                : 'bg-background border-border text-foreground hover:bg-muted'"
+              @click="$emit('set-positive-direction', dir.val as MMPositiveDirection)"
+            >{{ dir.label }}</button>
+          </div>
+        </div>
+
+        <!-- Grid spacing -->
+        <div>
+          <p class="text-xs text-muted-foreground mb-1.5">Grid spacing</p>
+          <div class="flex items-center gap-2">
+            <input
+              type="range"
+              min="20"
+              max="80"
+              step="5"
+              :value="state.gridSpacing"
+              class="flex-1 accent-sky-500"
+              @input="$emit('set-grid-spacing', +($event.target as HTMLInputElement).value)"
+            />
+            <span class="text-xs text-muted-foreground w-8 text-right">{{ state.gridSpacing }}px</span>
+          </div>
+        </div>
+
+        <!-- Velocity scale -->
+        <div>
+          <p class="text-xs text-muted-foreground mb-1.5">Velocity vector scale</p>
+          <div class="flex items-center gap-2">
+            <input
+              type="range"
+              min="0.1"
+              max="5"
+              step="0.1"
+              :value="state.velocityScale"
+              class="flex-1 accent-sky-500"
+              @input="$emit('set-velocity-scale', +($event.target as HTMLInputElement).value)"
+            />
+            <span class="text-xs text-muted-foreground w-8 text-right">{{ state.velocityScale.toFixed(1) }}×</span>
+          </div>
+        </div>
+
+        <!-- Show grid toggle -->
+        <label class="flex items-center justify-between text-sm cursor-pointer">
+          <span class="text-foreground">Show grid</span>
+          <Toggle :value="state.showGrid" @toggle="$emit('set-show-grid', $event)" />
+        </label>
+      </section>
+
+      <!-- Selected Dot Controls -->
+      <section v-if="selectedDot" class="rounded-lg border border-sky-200 bg-sky-50/50 p-3 space-y-3">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-medium text-sky-700">Selected dot — t{{ toSubscript(selectedDot.timeIndex) }}</p>
+          <button
+            type="button"
+            class="text-xs text-destructive hover:underline"
+            @click="$emit('delete', selectedDot.id)"
+          >Delete</button>
+        </div>
+
+        <!-- Velocity -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-medium text-foreground">Velocity direction</p>
+            <Toggle
+              :value="selectedDot.velocity.visible"
+              @toggle="$emit('update-velocity', selectedDot.id, { ...selectedDot.velocity, visible: $event })"
+            />
+          </div>
+          <div class="flex gap-1.5">
+            <button
+              v-for="dir in velocityDirOptions"
               :key="dir.val"
               type="button"
               class="flex-1 py-1 text-xs rounded-md border transition-colors"
-              :class="state.accelDir === dir.val
+              :class="selectedDot.velocity.direction === dir.val
+                ? 'bg-slate-700 border-slate-700 text-white'
+                : 'bg-background border-border text-foreground hover:bg-muted'"
+              @click="$emit('update-velocity', selectedDot.id, { ...selectedDot.velocity, direction: dir.val as 1 | -1 })"
+            >{{ dir.label }}</button>
+          </div>
+        </div>
+
+        <!-- Acceleration -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-medium text-rose-600">Acceleration</p>
+            <Toggle
+              :value="selectedDot.acceleration.visible"
+              color="rose"
+              @toggle="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, visible: $event })"
+            />
+          </div>
+          <div class="flex gap-1.5">
+            <button
+              v-for="dir in accelDirOptions"
+              :key="dir.val"
+              type="button"
+              class="flex-1 py-1 text-xs rounded-md border transition-colors"
+              :class="selectedDot.acceleration.direction === dir.val
                 ? 'bg-rose-500 border-rose-500 text-white'
                 : 'bg-background border-border text-foreground hover:bg-muted'"
-              @click="$emit('set-accel', state.accelMag, dir.val as 1 | -1)"
+              @click="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, direction: dir.val as 1 | -1 })"
             >{{ dir.label }}</button>
           </div>
           <div class="flex items-center gap-2">
-            <label class="text-xs text-muted-foreground w-12">Size</label>
+            <span class="text-xs text-muted-foreground w-12">Magnitude</span>
             <input
               type="range"
-              min="10"
-              max="150"
-              :value="state.accelMag"
+              min="0"
+              max="10"
+              step="0.5"
+              :value="selectedDot.acceleration.magnitude"
               class="flex-1 accent-rose-500"
-              @input="$emit('set-accel', +($event.target as HTMLInputElement).value, state.accelDir)"
+              @input="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, magnitude: +($event.target as HTMLInputElement).value })"
             />
-            <span class="text-xs text-muted-foreground w-8 text-right">{{ state.accelMag }}</span>
+            <span class="text-xs text-muted-foreground w-6 text-right">{{ selectedDot.acceleration.magnitude }}</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Selected dot velocity controls -->
-      <div v-if="selectedDot" class="rounded-lg border border-sky-200 bg-sky-50/50 p-3 space-y-2">
-        <p class="text-xs font-medium text-sky-700">Velocity (dot {{ selectedIndex }})</p>
-        <div class="flex gap-1.5">
-          <button
-            v-for="dir in [{ label: '+ direction', val: 1 }, { label: '− direction', val: -1 }]"
-            :key="dir.val"
-            type="button"
-            class="flex-1 py-1 text-xs rounded-md border transition-colors"
-            :class="selectedDot.velocityDir === dir.val
-              ? 'bg-sky-500 border-sky-500 text-white'
-              : 'bg-background border-border text-foreground hover:bg-muted'"
-            @click="$emit('update-velocity', selectedDot.id, selectedDot.velocityMag, dir.val as 1 | -1)"
-          >{{ dir.label }}</button>
-        </div>
-        <div class="flex items-center gap-2">
-          <label class="text-xs text-muted-foreground w-12">Size</label>
-          <input
-            type="range"
-            min="0"
-            max="120"
-            :value="selectedDot.velocityMag"
-            class="flex-1 accent-sky-500"
-            @input="$emit('update-velocity', selectedDot.id, +($event.target as HTMLInputElement).value, selectedDot.velocityDir)"
-          />
-          <span class="text-xs text-muted-foreground w-8 text-right">{{ selectedDot.velocityMag }}</span>
-        </div>
-      </div>
+      <!-- Global Vector Controls -->
+      <section class="space-y-2">
+        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Display</p>
+        <label class="flex items-center justify-between text-sm cursor-pointer">
+          <span class="text-foreground">Velocity vectors</span>
+          <Toggle :value="state.showAllVelocity" @toggle="$emit('set-show-all-velocity', $event)" />
+        </label>
+        <label class="flex items-center justify-between text-sm cursor-pointer">
+          <span class="text-foreground">Acceleration vectors</span>
+          <Toggle :value="state.showAllAccel" @toggle="$emit('set-show-all-accel', $event)" />
+        </label>
+        <label class="flex items-center justify-between text-sm cursor-pointer">
+          <span class="text-foreground">Time labels</span>
+          <Toggle :value="state.showLabels" @toggle="$emit('set-show-labels', $event)" />
+        </label>
+      </section>
 
-      <!-- Dot list -->
-      <div v-if="sortedDots.length">
-        <p class="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Dots</p>
-        <div class="space-y-1">
-          <div
-            v-for="(dot, i) in sortedDots"
-            :key="dot.id"
-            class="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer text-xs transition-colors"
-            :class="selectedId === dot.id ? 'bg-sky-50 border border-sky-200' : 'border border-transparent hover:bg-muted/50'"
-            @click="$emit('select', dot.id)"
-          >
-            <span class="font-mono text-muted-foreground">t{{ i }}</span>
-            <span class="flex-1 text-muted-foreground">pos {{ Math.round(dot.position) }}</span>
-            <span class="text-sky-600">v={{ dot.velocityMag }}</span>
-            <button
-              type="button"
-              class="text-muted-foreground hover:text-destructive transition-colors"
-              @click.stop="$emit('delete', dot.id)"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6 6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Footer -->
@@ -168,39 +201,78 @@
 </template>
 
 <script setup lang="ts">
-import type { MMState, MMDot, MMOrientation } from '@/types'
 import { computed } from 'vue'
+import type { MMState, MMDot, MMOrientation, MMPositiveDirection } from '@/types'
 
 const props = defineProps<{
   state: MMState
   selectedId: string | null
   selectedDot: MMDot | null
-  sortedDots: MMDot[]
   canUndo: boolean
 }>()
 
 defineEmits<{
   'set-orientation': [o: MMOrientation]
-  'set-show-velocity': [show: boolean]
-  'set-show-accel': [show: boolean]
+  'set-positive-direction': [dir: MMPositiveDirection]
+  'set-grid-spacing': [px: number]
+  'set-velocity-scale': [scale: number]
+  'set-show-grid': [show: boolean]
+  'update-velocity': [id: string, vel: MMDot['velocity']]
+  'update-acceleration': [id: string, accel: MMDot['acceleration']]
+  'set-show-all-velocity': [show: boolean]
+  'set-show-all-accel': [show: boolean]
   'set-show-labels': [show: boolean]
-  'set-snap': [enabled: boolean]
-  'set-accel': [mag: number, dir: 1 | -1]
-  'update-velocity': [id: string, mag: number, dir: 1 | -1]
   delete: [id: string]
-  select: [id: string]
   undo: []
   export: []
 }>()
 
-const TOGGLES = [
-  { key: 'showVelocity', label: 'Velocity arrows', event: 'set-show-velocity' },
-  { key: 'showAccel', label: 'Acceleration arrow', event: 'set-show-accel' },
-  { key: 'showLabels', label: 'Time labels', event: 'set-show-labels' },
-]
+const SUBSCRIPTS = '₀₁₂₃₄₅₆₇₈₉'
+function toSubscript(n: number): string {
+  return String(n)
+    .split('')
+    .map((d) => SUBSCRIPTS[parseInt(d)] ?? d)
+    .join('')
+}
 
-const selectedIndex = computed(() => {
-  if (!props.selectedDot) return -1
-  return props.sortedDots.findIndex((d) => d.id === props.selectedDot!.id)
-})
+const positiveDirectionOptions = computed(() =>
+  props.state.orientation === 'horizontal'
+    ? [{ label: 'Right →', val: 'right' }, { label: '← Left', val: 'left' }]
+    : [{ label: '↑ Up', val: 'up' }, { label: 'Down ↓', val: 'down' }]
+)
+
+const velocityDirOptions = computed(() =>
+  props.state.orientation === 'horizontal'
+    ? [{ label: '→ Right', val: 1 }, { label: '← Left', val: -1 }]
+    : [{ label: '↓ Down', val: 1 }, { label: '↑ Up', val: -1 }]
+)
+
+const accelDirOptions = computed(() =>
+  props.state.orientation === 'horizontal'
+    ? [{ label: '→ Right', val: 1 }, { label: '← Left', val: -1 }]
+    : [{ label: '↓ Down', val: 1 }, { label: '↑ Up', val: -1 }]
+)
+
+const Toggle = {
+  props: {
+    value: Boolean,
+    color: { type: String, default: 'sky' },
+  },
+  emits: ['toggle'],
+  template: `
+    <button
+      type="button"
+      class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1"
+      :class="[value
+        ? (color === 'rose' ? 'bg-rose-500 focus:ring-rose-500' : 'bg-sky-500 focus:ring-sky-500')
+        : 'bg-muted focus:ring-sky-500']"
+      @click="$emit('toggle', !value)"
+    >
+      <span
+        class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform"
+        :class="value ? 'translate-x-5' : 'translate-x-0.5'"
+      />
+    </button>
+  `,
+}
 </script>

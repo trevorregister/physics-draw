@@ -1,9 +1,31 @@
 <template>
-  <g
-    style="cursor: pointer;"
-    @pointerdown.stop="$emit('drag-start', $event, dot.id)"
-    @click.stop="$emit('select', dot.id)"
-  >
+  <g style="cursor: pointer;" @click.stop="$emit('select', dot.id)">
+    <!-- Velocity arrow (originates from dot, parallel to axis) -->
+    <line
+      v-if="showVelocity && velocityLength > 0"
+      :x1="dotX"
+      :y1="dotY"
+      :x2="velTipX"
+      :y2="velTipY"
+      stroke="#1e293b"
+      stroke-width="2"
+      marker-end="url(#mm-vel-arrow)"
+      pointer-events="none"
+    />
+
+    <!-- Acceleration arrow (below/left of axis) -->
+    <line
+      v-if="showAccel && dot.acceleration.magnitude > 0"
+      :x1="accelBaseX"
+      :y1="accelBaseY"
+      :x2="accelTipX"
+      :y2="accelTipY"
+      stroke="#f43f5e"
+      stroke-width="2"
+      marker-end="url(#mm-accel-arrow)"
+      pointer-events="none"
+    />
+
     <!-- Dot -->
     <circle
       :cx="dotX"
@@ -14,40 +36,17 @@
       stroke-width="2"
     />
 
-    <!-- Time label using Unicode subscripts -->
+    <!-- Time label -->
     <text
       v-if="showLabel"
       :x="labelX"
       :y="labelY"
       :text-anchor="labelAnchor"
       dominant-baseline="middle"
-      font-size="11"
+      font-size="12"
       fill="#64748b"
       pointer-events="none"
     >t{{ subscript }}</text>
-
-    <!-- Velocity arrow (perpendicular to baseline) -->
-    <g v-if="showVelocity && dot.velocityMag > 0" pointer-events="none">
-      <defs>
-        <marker
-          :id="`vel-${dot.id}`"
-          markerWidth="8" markerHeight="6"
-          refX="7" refY="3"
-          orient="auto"
-        >
-          <polygon points="0 0, 8 3, 0 6" fill="#0ea5e9" />
-        </marker>
-      </defs>
-      <line
-        :x1="dotX"
-        :y1="dotY"
-        :x2="velTipX"
-        :y2="velTipY"
-        stroke="#0ea5e9"
-        stroke-width="2"
-        :marker-end="`url(#vel-${dot.id})`"
-      />
-    </g>
   </g>
 </template>
 
@@ -55,47 +54,73 @@
 import { computed } from 'vue'
 import type { MMDot, MMOrientation } from '@/types'
 
+const ACCEL_OFFSET = 60
+
 const props = defineProps<{
   dot: MMDot
-  index: number
   orientation: MMOrientation
+  gridSpacing: number
+  canvasW: number
+  canvasH: number
   baseline: number
+  velocityLength: number
   selected: boolean
   showVelocity: boolean
+  showAccel: boolean
   showLabel: boolean
 }>()
 
 defineEmits<{
   select: [id: string]
-  'drag-start': [event: PointerEvent, id: string]
 }>()
 
 const SUBSCRIPTS = '₀₁₂₃₄₅₆₇₈₉'
 function toSubscript(n: number): string {
-  return String(n).split('').map((d) => SUBSCRIPTS[parseInt(d)] ?? d).join('')
+  return String(n)
+    .split('')
+    .map((d) => SUBSCRIPTS[parseInt(d)] ?? d)
+    .join('')
 }
 
-const subscript = computed(() => toSubscript(props.index))
+const subscript = computed(() => toSubscript(props.dot.timeIndex))
 
-const dotX = computed(() => props.orientation === 'horizontal' ? props.dot.position : props.baseline)
-const dotY = computed(() => props.orientation === 'horizontal' ? props.baseline : props.dot.position)
+const isHorizontal = computed(() => props.orientation === 'horizontal')
 
-// Label: below dot for horizontal; to the left for vertical (velocity arrows go right)
-const labelX = computed(() => props.orientation === 'horizontal' ? dotX.value : dotX.value - 14)
-const labelY = computed(() => props.orientation === 'horizontal' ? dotY.value + 20 : dotY.value)
-const labelAnchor = computed(() => props.orientation === 'horizontal' ? 'middle' : 'end')
+const dotX = computed(() =>
+  isHorizontal.value
+    ? props.canvasW / 2 + props.dot.gridIndex * props.gridSpacing
+    : props.baseline
+)
+const dotY = computed(() =>
+  isHorizontal.value
+    ? props.baseline
+    : props.canvasH / 2 + props.dot.gridIndex * props.gridSpacing
+)
 
-// Velocity arrow: perpendicular to baseline, above (−y) for horizontal, right (+x) for vertical
-const velTipX = computed(() => {
-  if (props.orientation === 'vertical') {
-    return dotX.value + props.dot.velocityDir * props.dot.velocityMag
-  }
-  return dotX.value
-})
-const velTipY = computed(() => {
-  if (props.orientation === 'horizontal') {
-    return dotY.value - props.dot.velocityDir * props.dot.velocityMag
-  }
-  return dotY.value
-})
+// Velocity: originates from dot, direction maps directly to SVG axis
+const velDelta = computed(() => props.dot.velocity.direction * props.velocityLength)
+const velTipX = computed(() => (isHorizontal.value ? dotX.value + velDelta.value : dotX.value))
+const velTipY = computed(() => (isHorizontal.value ? dotY.value : dotY.value + velDelta.value))
+
+// Acceleration: below axis (horizontal) or left of axis (vertical)
+const accelDelta = computed(
+  () => props.dot.acceleration.direction * props.dot.acceleration.magnitude * props.gridSpacing
+)
+const accelBaseX = computed(() =>
+  isHorizontal.value ? dotX.value : props.baseline - ACCEL_OFFSET
+)
+const accelBaseY = computed(() =>
+  isHorizontal.value ? props.baseline + ACCEL_OFFSET : dotY.value
+)
+const accelTipX = computed(() =>
+  isHorizontal.value ? dotX.value + accelDelta.value : props.baseline - ACCEL_OFFSET
+)
+const accelTipY = computed(() =>
+  isHorizontal.value ? props.baseline + ACCEL_OFFSET : dotY.value + accelDelta.value
+)
+
+// Label: below dot for horizontal, left for vertical
+const labelX = computed(() => (isHorizontal.value ? dotX.value : dotX.value - 14))
+const labelY = computed(() => (isHorizontal.value ? dotY.value + 20 : dotY.value))
+const labelAnchor = computed(() => (isHorizontal.value ? 'middle' : 'end'))
 </script>
