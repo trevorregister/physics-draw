@@ -224,7 +224,7 @@ const PRESETS = [
   { key: 'friction-l', name: 'Friction', dirLabel: 'left', label: 'F_f', angle: 180, color: '#000000' },
   { key: 'friction-r', name: 'Friction', dirLabel: 'right', label: 'F_f', angle: 0, color: '#000000' },
   { key: 'applied', name: 'Applied', dirLabel: 'custom', label: 'F_{app}', angle: null as number | null, color: '#000000' },
-  { key: 'tension', name: 'Tension', dirLabel: 'up', label: 'T', angle: 90, color: '#000000' },
+  { key: 'tension', name: 'Tension', dirLabel: 'up', label: 'F_T', angle: 90, color: '#000000' },
   { key: 'drag', name: 'Drag', dirLabel: 'left', label: 'F_d', angle: 180, color: '#000000' },
   { key: 'buoyancy', name: 'Buoyancy', dirLabel: 'up', label: 'F_b', angle: 90, color: '#000000' },
 ]

@@ -17,6 +17,7 @@
         fontFamily: 'KaTeX_Main, serif',
         whiteSpace: 'nowrap',
         userSelect: 'none',
+        textAlign: 'center',
       }"
     />
   </foreignObject>

@@ -114,13 +114,14 @@ const tipY = computed(() => props.cy + dy.value)
 const shaftTipX = computed(() => props.cx + (props.vector.magnitude - ARROWHEAD_LENGTH) * Math.cos(rad.value))
 const shaftTipY = computed(() => props.cy - (props.vector.magnitude - ARROWHEAD_LENGTH) * Math.sin(rad.value))
 
-// Label placed past the tip, offset perpendicular to the arrow
+const LABEL_RADIUS = 24 // px from arrowhead tip, perpendicular to shaft
+
 const labelX = computed(() => {
   const mag = Math.max(props.vector.magnitude, 1)
-  return props.cx + dx.value * 1.08 + (-dy.value / mag) * 14
+  return tipX.value + (-dy.value / mag) * LABEL_RADIUS
 })
 const labelY = computed(() => {
   const mag = Math.max(props.vector.magnitude, 1)
-  return props.cy + dy.value * 1.08 + (dx.value / mag) * 14
+  return tipY.value + (dx.value / mag) * LABEL_RADIUS
 })
 </script>
