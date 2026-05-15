@@ -5,7 +5,7 @@
       class="fixed inset-0 z-50 flex items-center justify-center"
     >
       <div class="absolute inset-0 bg-black/30" @click="$emit('cancel')" />
-      <div class="relative bg-white rounded-xl shadow-xl border border-border p-6 w-80 space-y-4">
+      <div class="relative z-10 bg-white rounded-xl shadow-xl border border-border p-6 w-80 space-y-4">
         <h3 class="text-sm font-semibold text-foreground">{{ title }}</h3>
         <p class="text-sm text-muted-foreground">{{ message }}</p>
         <div class="flex gap-2 justify-end">

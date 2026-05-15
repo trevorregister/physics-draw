@@ -84,7 +84,14 @@
         <!-- Show grid toggle -->
         <label class="flex items-center justify-between text-sm cursor-pointer">
           <span class="text-foreground">Show grid</span>
-          <Toggle :value="state.showGrid" @toggle="$emit('set-show-grid', $event)" />
+          <button
+            type="button"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            :class="state.showGrid ? 'bg-sky-500' : 'bg-muted'"
+            @click="$emit('set-show-grid', !state.showGrid)"
+          >
+            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showGrid ? 'translate-x-5' : 'translate-x-0.5'" />
+          </button>
         </label>
       </section>
 
@@ -103,10 +110,14 @@
         <div class="space-y-1.5">
           <div class="flex items-center justify-between">
             <p class="text-xs font-medium text-foreground">Velocity direction</p>
-            <Toggle
-              :value="selectedDot.velocity.visible"
-              @toggle="$emit('update-velocity', selectedDot.id, { ...selectedDot.velocity, visible: $event })"
-            />
+            <button
+              type="button"
+              class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+              :class="selectedDot.velocity.visible ? 'bg-sky-500' : 'bg-muted'"
+              @click="$emit('update-velocity', selectedDot.id, { ...selectedDot.velocity, visible: !selectedDot.velocity.visible })"
+            >
+              <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="selectedDot.velocity.visible ? 'translate-x-5' : 'translate-x-0.5'" />
+            </button>
           </div>
           <div class="flex gap-1.5">
             <button
@@ -126,11 +137,14 @@
         <div class="space-y-1.5">
           <div class="flex items-center justify-between">
             <p class="text-xs font-medium text-rose-600">Acceleration</p>
-            <Toggle
-              :value="selectedDot.acceleration.visible"
-              color="rose"
-              @toggle="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, visible: $event })"
-            />
+            <button
+              type="button"
+              class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1"
+              :class="selectedDot.acceleration.visible ? 'bg-rose-500' : 'bg-muted'"
+              @click="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, visible: !selectedDot.acceleration.visible })"
+            >
+              <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="selectedDot.acceleration.visible ? 'translate-x-5' : 'translate-x-0.5'" />
+            </button>
           </div>
           <div class="flex gap-1.5">
             <button
@@ -165,15 +179,36 @@
         <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Display</p>
         <label class="flex items-center justify-between text-sm cursor-pointer">
           <span class="text-foreground">Velocity vectors</span>
-          <Toggle :value="state.showAllVelocity" @toggle="$emit('set-show-all-velocity', $event)" />
+          <button
+            type="button"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            :class="state.showAllVelocity ? 'bg-sky-500' : 'bg-muted'"
+            @click="$emit('set-show-all-velocity', !state.showAllVelocity)"
+          >
+            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showAllVelocity ? 'translate-x-5' : 'translate-x-0.5'" />
+          </button>
         </label>
         <label class="flex items-center justify-between text-sm cursor-pointer">
           <span class="text-foreground">Acceleration vectors</span>
-          <Toggle :value="state.showAllAccel" @toggle="$emit('set-show-all-accel', $event)" />
+          <button
+            type="button"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            :class="state.showAllAccel ? 'bg-sky-500' : 'bg-muted'"
+            @click="$emit('set-show-all-accel', !state.showAllAccel)"
+          >
+            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showAllAccel ? 'translate-x-5' : 'translate-x-0.5'" />
+          </button>
         </label>
         <label class="flex items-center justify-between text-sm cursor-pointer">
           <span class="text-foreground">Time labels</span>
-          <Toggle :value="state.showLabels" @toggle="$emit('set-show-labels', $event)" />
+          <button
+            type="button"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            :class="state.showLabels ? 'bg-sky-500' : 'bg-muted'"
+            @click="$emit('set-show-labels', !state.showLabels)"
+          >
+            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showLabels ? 'translate-x-5' : 'translate-x-0.5'" />
+          </button>
         </label>
       </section>
 
@@ -263,26 +298,4 @@ const accelDirOptions = computed(() =>
     : [{ label: '↓ Down', val: 1 }, { label: '↑ Up', val: -1 }]
 )
 
-const Toggle = {
-  props: {
-    value: Boolean,
-    color: { type: String, default: 'sky' },
-  },
-  emits: ['toggle'],
-  template: `
-    <button
-      type="button"
-      class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1"
-      :class="[value
-        ? (color === 'rose' ? 'bg-rose-500 focus:ring-rose-500' : 'bg-sky-500 focus:ring-sky-500')
-        : 'bg-muted focus:ring-sky-500']"
-      @click="$emit('toggle', !value)"
-    >
-      <span
-        class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform"
-        :class="value ? 'translate-x-5' : 'translate-x-0.5'"
-      />
-    </button>
-  `,
-}
 </script>
