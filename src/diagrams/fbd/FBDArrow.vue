@@ -4,13 +4,14 @@
     <defs>
       <marker
         :id="`ah-${vector.id}`"
-        markerWidth="10"
-        markerHeight="7"
-        refX="9"
-        refY="3.5"
+        markerUnits="userSpaceOnUse"
+        markerWidth="25"
+        markerHeight="17.5"
+        refX="0"
+        refY="8.75"
         orient="auto"
       >
-        <polygon :points="`0 0, 10 3.5, 0 7`" :fill="vector.color" />
+        <polygon :points="`0 0, 25 8.75, 0 17.5`" :fill="vector.color" />
       </marker>
     </defs>
 
@@ -31,11 +32,11 @@
     <line
       :x1="cx"
       :y1="cy"
-      :x2="tipX"
-      :y2="tipY"
+      :x2="shaftTipX"
+      :y2="shaftTipY"
       :stroke="vector.color"
-      stroke-width="2.5"
-      stroke-linecap="round"
+      stroke-width="5"
+      stroke-linecap="butt"
       :marker-end="`url(#ah-${vector.id})`"
       style="cursor: pointer;"
       @pointerdown.stop="$emit('select', vector.id)"
@@ -101,12 +102,17 @@ defineEmits<{
   'drag-start': [event: PointerEvent, id: string]
 }>()
 
+const ARROWHEAD_LENGTH = 25
+
 const rad = computed(() => (props.vector.angle * Math.PI) / 180)
 const dx = computed(() => props.vector.magnitude * Math.cos(rad.value))
 const dy = computed(() => -props.vector.magnitude * Math.sin(rad.value))
 
 const tipX = computed(() => props.cx + dx.value)
 const tipY = computed(() => props.cy + dy.value)
+
+const shaftTipX = computed(() => props.cx + (props.vector.magnitude - ARROWHEAD_LENGTH) * Math.cos(rad.value))
+const shaftTipY = computed(() => props.cy - (props.vector.magnitude - ARROWHEAD_LENGTH) * Math.sin(rad.value))
 
 // Label placed past the tip, offset perpendicular to the arrow
 const labelX = computed(() => {
