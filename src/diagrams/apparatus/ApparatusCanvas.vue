@@ -307,8 +307,8 @@ function onPointerMove(e: PointerEvent) {
         const snapped = snapInclineCenter(x, y, obj.width, obj.height, state.value.gridSpacing)
         x = snapped.x; y = snapped.y
       } else {
-        x = snapToIncrement(x, state.value.gridSpacing)
-        y = snapToIncrement(y, state.value.gridSpacing)
+        x = snapToIncrement(x - obj.width / 2, state.value.gridSpacing) + obj.width / 2
+        y = snapToIncrement(y - obj.height / 2, state.value.gridSpacing) + obj.height / 2
       }
     }
     apparatus.moveObject(dragObjectId.value, x, y)
@@ -336,19 +336,39 @@ function onPointerMove(e: PointerEvent) {
     const ldx = dx * cos - dy * sin
     const ldy = dx * sin + dy * cos
 
+    const gs = state.value.gridSpacing
+    const snap = (v: number) => state.value.snapEnabled ? snapToIncrement(v, gs) : v
+
+    const leftEdge  = dragStart.value.objX - dragStart.value.objW / 2
+    const rightEdge = dragStart.value.objX + dragStart.value.objW / 2
+    const topEdge   = dragStart.value.objY - dragStart.value.objH / 2
+    const botEdge   = dragStart.value.objY + dragStart.value.objH / 2
+
+    let newX = dragStart.value.objX
+    let newY = dragStart.value.objY
     let w = dragStart.value.objW
     let h = dragStart.value.objH
-    if (handle.includes('e')) w = dragStart.value.objW + 2 * ldx
-    if (handle.includes('w')) w = dragStart.value.objW - 2 * ldx
-    if (handle.includes('s')) h = dragStart.value.objH + 2 * ldy
-    if (handle.includes('n')) h = dragStart.value.objH - 2 * ldy
 
-    const gs = state.value.gridSpacing
-    if (state.value.snapEnabled) {
-      w = Math.max(gs, snapToIncrement(w, gs))
-      h = Math.max(gs, snapToIncrement(h, gs))
+    if (handle.includes('e')) {
+      const snapped = snap(rightEdge + ldx)
+      w = Math.max(gs, snapped - leftEdge)
+      newX = leftEdge + w / 2
+    } else if (handle.includes('w')) {
+      const snapped = snap(leftEdge + ldx)
+      w = Math.max(gs, rightEdge - snapped)
+      newX = rightEdge - w / 2
     }
-    apparatus.resizeObject(dragObjectId.value, dragStart.value.objX, dragStart.value.objY, w, h)
+    if (handle.includes('s')) {
+      const snapped = snap(botEdge + ldy)
+      h = Math.max(gs, snapped - topEdge)
+      newY = topEdge + h / 2
+    } else if (handle.includes('n')) {
+      const snapped = snap(topEdge + ldy)
+      h = Math.max(gs, botEdge - snapped)
+      newY = botEdge - h / 2
+    }
+
+    apparatus.resizeObject(dragObjectId.value, newX, newY, w, h)
   }
 }
 
