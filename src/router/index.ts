@@ -9,7 +9,7 @@ export default createRouter({
       component: () => import('@/views/HomeView.vue'),
     },
     {
-      path: '/fbd',
+      path: '/free-body-diagram',
       name: 'fbd',
       component: () => import('@/views/FBDView.vue'),
     },

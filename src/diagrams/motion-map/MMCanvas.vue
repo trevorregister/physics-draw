@@ -8,6 +8,8 @@
       class="select-none"
       style="touch-action: none; cursor: crosshair;"
       @click="onCanvasClick"
+      @mousemove="onMouseMove"
+      @mouseleave="hoverSnap = null"
     >
       <defs>
         <marker
@@ -123,6 +125,29 @@
         @select="$emit('select', $event)"
       />
 
+      <!-- Hover preview: dashed alignment line + ghost dot -->
+      <template v-if="hoverSnap">
+        <line
+          v-if="hoverSnap.laneOffset !== 0"
+          :x1="hoverDotX"
+          :y1="hoverDotY"
+          :x2="isHorizontal ? hoverDotX : BASELINE_X"
+          :y2="isHorizontal ? BASELINE_Y : hoverDotY"
+          stroke="#cbd5e1"
+          stroke-width="1"
+          stroke-dasharray="4,3"
+          pointer-events="none"
+        />
+        <circle
+          :cx="hoverDotX"
+          :cy="hoverDotY"
+          r="7"
+          fill="#94a3b8"
+          opacity="0.4"
+          pointer-events="none"
+        />
+      </template>
+
       <!-- Click hint when empty -->
       <text
         v-if="state.dots.length === 0"
@@ -161,6 +186,21 @@ const BASELINE_X = 400
 const svgEl = ref<SVGSVGElement | null>(null)
 
 const isHorizontal = computed(() => props.state.orientation === 'horizontal')
+
+const hoverSnap = ref<{ gridIndex: number; laneOffset: number } | null>(null)
+
+const hoverDotX = computed(() => {
+  if (!hoverSnap.value) return 0
+  return isHorizontal.value
+    ? W / 2 + hoverSnap.value.gridIndex * props.state.gridSpacing
+    : BASELINE_X + hoverSnap.value.laneOffset * props.state.gridSpacing
+})
+const hoverDotY = computed(() => {
+  if (!hoverSnap.value) return 0
+  return isHorizontal.value
+    ? BASELINE_Y - hoverSnap.value.laneOffset * props.state.gridSpacing
+    : H / 2 + hoverSnap.value.gridIndex * props.state.gridSpacing
+})
 
 const sortedByTime = computed(() =>
   [...props.state.dots].sort((a, b) => a.timeIndex - b.timeIndex)
@@ -208,17 +248,24 @@ function toSVGCoords(e: MouseEvent): { x: number; y: number } {
   return { x: svgP.x, y: svgP.y }
 }
 
-function onCanvasClick(e: MouseEvent) {
+function snapFromEvent(e: MouseEvent): { gridIndex: number; laneOffset: number } {
   const { x, y } = toSVGCoords(e)
   const gs = props.state.gridSpacing
   const rawAxis = isHorizontal.value ? x : y
   const center = isHorizontal.value ? W / 2 : H / 2
   const maxIdx = Math.floor(((isHorizontal.value ? W : H) / 2 - PADDING) / gs)
   const gridIndex = Math.max(-maxIdx, Math.min(maxIdx, Math.round((rawAxis - center) / gs)))
-
   const rawLane = isHorizontal.value ? (BASELINE_Y - y) / gs : (x - BASELINE_X) / gs
   const laneOffset = Math.round(rawLane)
+  return { gridIndex, laneOffset }
+}
 
+function onMouseMove(e: MouseEvent) {
+  hoverSnap.value = snapFromEvent(e)
+}
+
+function onCanvasClick(e: MouseEvent) {
+  const { gridIndex, laneOffset } = snapFromEvent(e)
   const existing = props.state.dots.find(
     (d) => d.gridIndex === gridIndex && d.laneOffset === laneOffset
   )

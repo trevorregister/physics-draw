@@ -1,18 +1,5 @@
 <template>
   <g style="cursor: pointer;" @click.stop="$emit('select', dot.id)">
-    <!-- Dashed connector from off-axis dot to axis -->
-    <line
-      v-if="dot.laneOffset !== 0"
-      :x1="dotX"
-      :y1="dotY"
-      :x2="isHorizontal ? dotX : baseline"
-      :y2="isHorizontal ? baseline : dotY"
-      stroke="#cbd5e1"
-      stroke-width="1"
-      stroke-dasharray="4,3"
-      pointer-events="none"
-    />
-
     <!-- Velocity arrow (originates from dot, parallel to axis) -->
     <line
       v-if="showVelocity && velocityLength > 0"
@@ -23,19 +10,6 @@
       stroke="#1e293b"
       stroke-width="2"
       marker-end="url(#mm-vel-arrow)"
-      pointer-events="none"
-    />
-
-    <!-- Acceleration arrow (below/left of axis, anchored to axis projection) -->
-    <line
-      v-if="showAccel && dot.acceleration.magnitude > 0"
-      :x1="accelBaseX"
-      :y1="accelBaseY"
-      :x2="accelTipX"
-      :y2="accelTipY"
-      stroke="#f43f5e"
-      stroke-width="2"
-      marker-end="url(#mm-accel-arrow)"
       pointer-events="none"
     />
 

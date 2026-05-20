@@ -73,7 +73,7 @@ const TOOLS = [
     name: 'fbd',
     title: 'Free Body Diagram',
     description: 'Draw all forces acting on an object. Add labeled force vectors with one click and drag to adjust direction and magnitude.',
-    path: '/fbd',
+    path: '/free-body-diagram',
     icon: ArrowIcon,
   },
   {
