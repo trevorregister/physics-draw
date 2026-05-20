@@ -48,7 +48,7 @@
                 I'm a former physics teacher turned fullstack developer. I hold a B.S. in Physics from Georgia Tech and an M.A. in Teaching Physics from Kennesaw State University, and spent seven years in the classroom teaching Conceptual Physics, AP Physics 1, and AP Physics C at high schools in the Atlanta area.
               </p>
               <p>
-                I transitioned into EdTech by joining the Pivot Interactives team as a customer support specialist. Over time I then joined the engineering team as a full stack developer. I'm now able to use those skills to build tools that I know will be useful for other teachers.
+                I transitioned into EdTech by joining the <a href="https://www.pivotinteractives.com" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-700 underline underline-offset-2">Pivot Interactives</a> team as a customer support specialist. Over time I then joined the engineering team as a full stack developer. I'm now able to use those skills to build tools that I know will be useful for other teachers.
               </p>
               <p>
                 PhysicsDraw is a personal project that sits at the intersection of those two careers. You can find out more about me at <a href="https://www.trevorregister.com" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-700 underline underline-offset-2">trevorregister.com</a>.
