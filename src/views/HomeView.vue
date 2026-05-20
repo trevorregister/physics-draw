@@ -138,6 +138,14 @@ const CircuitIcon = () =>
     h('path', { d: 'M15 12v-2h4v4h-4v-2z' }),
   ])
 
+const EnergyBarIcon = () =>
+  h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', class: 'w-6 h-6' }, [
+    h('rect', { x: '3',  y: '10', width: '4', height: '11', rx: '1' }),
+    h('rect', { x: '10', y: '5',  width: '4', height: '16', rx: '1' }),
+    h('rect', { x: '17', y: '13', width: '4', height: '8',  rx: '1' }),
+    h('line', { x1: '2', y1: '21', x2: '22', y2: '21' }),
+  ])
+
 const TOOLS = [
   {
     name: 'fbd',
@@ -168,6 +176,12 @@ const COMING_SOON = [
     title: 'Circuit Schematics',
     description: 'Draw circuit diagrams with resistors, capacitors, batteries, and other standard components.',
     icon: CircuitIcon,
+  },
+  {
+    name: 'energy-bar',
+    title: 'Energy Bar Charts',
+    description: 'Build bar chart representations of energy to track how kinetic, potential, and thermal energy change across a system.',
+    icon: EnergyBarIcon,
   },
 ]
 </script>
