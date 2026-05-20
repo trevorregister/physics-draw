@@ -124,23 +124,6 @@
         </button>
       </div>
 
-      <!-- Grid spacing -->
-      <div>
-        <div class="flex items-center justify-between mb-1">
-          <span class="text-xs text-foreground">Grid spacing</span>
-          <span class="text-xs text-muted-foreground">{{ state.gridSpacing }}px</span>
-        </div>
-        <input
-          type="range"
-          min="20"
-          max="80"
-          step="10"
-          :value="state.gridSpacing"
-          class="w-full accent-sky-500"
-          @input="apparatus.setGridSpacing(+($event.target as HTMLInputElement).value)"
-        />
-      </div>
-
       <!-- Show grid toggle -->
       <div class="flex items-center justify-between">
         <span class="text-xs text-foreground">Show grid</span>

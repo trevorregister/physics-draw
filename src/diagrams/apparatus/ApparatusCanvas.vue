@@ -14,6 +14,7 @@
       @pointermove="onPointerMove"
       @pointerup="onPointerUp"
       @pointercancel="onPointerUp"
+      @lostpointercapture="onPointerUp"
       @dragstart.prevent
       @wheel.prevent="onWheel"
     >
@@ -187,6 +188,12 @@ type DragMode = null | 'move' | 'resize-nw' | 'resize-n' | 'resize-ne' | 'resize
 
 const DRAG_THRESHOLD_PX = 5
 
+// After an HTML5 drop, some browsers fire a synthetic pointerdown at the drop location.
+// Since the new object occupies that position, startMove would capture the pointer and
+// treat subsequent mouse movement as a drag. Block startMove for one frame after a drop.
+let dropGuard = false
+let dropGuardFrame = -1
+
 const dragMode = ref<DragMode>(null)
 const dragObjectId = ref<string | null>(null)
 const dragLabelId = ref<string | null>(null)
@@ -215,6 +222,7 @@ function clientToCanvas(clientX: number, clientY: number) {
 }
 
 function startMove(objId: string, e: PointerEvent) {
+  if (dropGuard) return
   const obj = state.value.objects.find((o) => o.id === objId)!
   apparatus.select(objId)
   dragMode.value = 'move'
@@ -284,17 +292,9 @@ function onPointerMove(e: PointerEvent) {
 
   if (dragMode.value === 'move') {
     if (!dragHasStarted.value) {
-      if (state.value.snapEnabled) {
-        // Only start drag when movement would actually change the snapped position.
-        // This prevents any "click" from accidentally snapping the object to a new grid cell.
-        const sx = snapToIncrement(dragStart.value.objX + dx, state.value.gridSpacing)
-        const sy = snapToIncrement(dragStart.value.objY + dy, state.value.gridSpacing)
-        if (sx === dragStart.value.objX && sy === dragStart.value.objY) return
-      } else {
-        const sdx = e.clientX - dragStartClientX.value
-        const sdy = e.clientY - dragStartClientY.value
-        if (sdx * sdx + sdy * sdy < DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) return
-      }
+      const sdx = e.clientX - dragStartClientX.value
+      const sdy = e.clientY - dragStartClientY.value
+      if (sdx * sdx + sdy * sdy < DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) return
       dragHasStarted.value = true
     }
     let x = dragStart.value.objX + dx
@@ -385,6 +385,9 @@ function onDrop(e: DragEvent) {
     ? (e.dataTransfer?.getData('apparatus-label') || '')
     : undefined
   apparatus.addObject(type, x, y, labelKatex)
+  dropGuard = true
+  cancelAnimationFrame(dropGuardFrame)
+  dropGuardFrame = requestAnimationFrame(() => { dropGuard = false })
 }
 
 function buildLabelLatex(lbl: ObjectLabel): string {
