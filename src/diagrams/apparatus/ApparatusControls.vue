@@ -16,7 +16,7 @@
               min="10"
               :value="Math.round(selectedObj.width)"
               class="w-full rounded-md border border-input bg-background px-2 py-1 text-sm"
-              @change="apparatus.resizeObject(selectedObj!.id, selectedObj!.x, selectedObj!.y, +($event.target as HTMLInputElement).value, selectedObj!.height); apparatus.commitResize(selectedObj!.id)"
+              @change="onWidthChange($event)"
             />
           </div>
           <div>
@@ -26,7 +26,7 @@
               min="10"
               :value="Math.round(selectedObj.height)"
               class="w-full rounded-md border border-input bg-background px-2 py-1 text-sm"
-              @change="apparatus.resizeObject(selectedObj!.id, selectedObj!.x, selectedObj!.y, selectedObj!.width, +($event.target as HTMLInputElement).value); apparatus.commitResize(selectedObj!.id)"
+              @change="onHeightChange($event)"
             />
           </div>
         </div>
@@ -37,7 +37,7 @@
             type="number"
             :value="Math.round(selectedObj.rotation)"
             class="w-full rounded-md border border-input bg-background px-2 py-1 text-sm"
-            @change="apparatus.rotateObject(selectedObj!.id, +($event.target as HTMLInputElement).value); apparatus.commitRotation(selectedObj!.id)"
+            @change="onRotationChange($event)"
           />
         </div>
       </template>
@@ -56,7 +56,7 @@
                 :value="lbl.katex"
                 placeholder="LaTeX (e.g. F_g)"
                 class="flex-1 rounded border border-input bg-background px-2 py-1 text-xs font-mono"
-                @change="apparatus.updateLabel(selectedObj!.id, lbl.id, { katex: ($event.target as HTMLInputElement).value })"
+                @change="onLabelKatexChange($event, lbl.id)"
               />
               <button
                 type="button"
@@ -73,13 +73,13 @@
                 :value="lbl.value"
                 placeholder="Value"
                 class="rounded border border-input bg-background px-2 py-1 text-xs"
-                @change="apparatus.updateLabel(selectedObj!.id, lbl.id, { value: ($event.target as HTMLInputElement).value })"
+                @change="onLabelValueChange($event, lbl.id)"
               />
               <input
                 :value="lbl.unit"
                 placeholder="Unit"
                 class="rounded border border-input bg-background px-2 py-1 text-xs"
-                @change="apparatus.updateLabel(selectedObj!.id, lbl.id, { unit: ($event.target as HTMLInputElement).value })"
+                @change="onLabelUnitChange($event, lbl.id)"
               />
             </div>
           </div>
@@ -205,6 +205,46 @@ const TYPE_NAMES: Partial<Record<ApparatusObjectType, string>> = {
   'height-bracket': 'Height Bracket',
   'ground-reference': 'Ground Reference',
   'standalone-label': 'Label',
+}
+
+function val(e: Event) {
+  return (e.target as HTMLInputElement).value
+}
+
+function onWidthChange(e: Event) {
+  const o = selectedObj.value
+  if (!o) return
+  apparatus.resizeObject(o.id, o.x, o.y, +val(e), o.height)
+  apparatus.commitResize(o.id)
+}
+
+function onHeightChange(e: Event) {
+  const o = selectedObj.value
+  if (!o) return
+  apparatus.resizeObject(o.id, o.x, o.y, o.width, +val(e))
+  apparatus.commitResize(o.id)
+}
+
+function onRotationChange(e: Event) {
+  const o = selectedObj.value
+  if (!o) return
+  apparatus.rotateObject(o.id, +val(e))
+  apparatus.commitRotation(o.id)
+}
+
+function onLabelKatexChange(e: Event, lblId: string) {
+  if (!selectedObj.value) return
+  apparatus.updateLabel(selectedObj.value.id, lblId, { katex: val(e) })
+}
+
+function onLabelValueChange(e: Event, lblId: string) {
+  if (!selectedObj.value) return
+  apparatus.updateLabel(selectedObj.value.id, lblId, { value: val(e) })
+}
+
+function onLabelUnitChange(e: Event, lblId: string) {
+  if (!selectedObj.value) return
+  apparatus.updateLabel(selectedObj.value.id, lblId, { unit: val(e) })
 }
 
 function addDefaultLabel() {

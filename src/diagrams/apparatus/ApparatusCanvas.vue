@@ -85,6 +85,7 @@
           v-if="selectedObj"
           :transform="`translate(${selectedObj.x},${selectedObj.y}) rotate(${selectedObj.rotation})`"
           pointer-events="none"
+          data-no-export="true"
         >
           <!-- Bounding box -->
           <rect

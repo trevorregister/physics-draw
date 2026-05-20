@@ -81,6 +81,7 @@ export function useExport(svgRef: Ref<SVGSVGElement | null>, filename: string) {
 
           // Composite labels directly — no SVG image embedding, so no security restrictions
           for (const { labelCanvas, cx, cy } of labels) {
+            if (labelCanvas.width === 0 || labelCanvas.height === 0) continue
             const lw = labelCanvas.width / 2  // CSS width (canvas is 2x from pixelRatio)
             const lh = labelCanvas.height / 2
             ctx.drawImage(labelCanvas, cx - lw / 2, cy - lh / 2, lw, lh)

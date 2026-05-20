@@ -18,9 +18,19 @@
       :cx="dotX"
       :cy="dotY"
       r="7"
-      :fill="selected ? '#0ea5e9' : '#1e293b'"
-      :stroke="selected ? '#0284c7' : 'none'"
+      fill="#1e293b"
+    />
+    <!-- Selection ring (stripped on export) -->
+    <circle
+      v-if="selected"
+      :cx="dotX"
+      :cy="dotY"
+      r="10"
+      fill="none"
+      stroke="#0ea5e9"
       stroke-width="2"
+      data-no-export="true"
+      pointer-events="none"
     />
 
     <!-- Time label -->
