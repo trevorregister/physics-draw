@@ -7,10 +7,12 @@ export const DEFAULT_DIMS: Record<ApparatusObjectType, [number, number]> = {
   'line': [200, 4],
   'hatched-line': [200, 30],
   'box': [80, 80],
-  'spring': [120, 80],
+  'spring': [160, 80],
   'incline': [160, 120],
   'jagged-line': [200, 20],
-  'pulley': [60, 60],
+  'pulley': [80, 160],
+  'atwood': [80, 160],
+  'half-atwood': [160, 160],
   'circle': [60, 60],
   'cart': [120, 60],
   'arrow': [120, 20],
@@ -96,6 +98,13 @@ export function useApparatus() {
   function commitRotation(id: string) {
     pushUndo(state.value)
     void id
+  }
+
+  function flipObject(id: string, axis: 'x' | 'y') {
+    const obj = state.value.objects.find((o) => o.id === id)
+    if (!obj) return
+    patchObject(id, axis === 'x' ? { flipX: !obj.flipX } : { flipY: !obj.flipY })
+    pushUndo(state.value)
   }
 
   function moveLabelOffset(objId: string, lblId: string, offsetX: number, offsetY: number) {
@@ -199,6 +208,7 @@ export function useApparatus() {
     commitResize,
     rotateObject,
     commitRotation,
+    flipObject,
     moveLabelOffset,
     commitLabelMove,
     addLabel,

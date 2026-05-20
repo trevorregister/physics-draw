@@ -45,7 +45,7 @@
         <g
           v-for="obj in state.objects"
           :key="obj.id"
-          :transform="`translate(${obj.x},${obj.y}) rotate(${obj.rotation})`"
+          :transform="`translate(${obj.x},${obj.y}) rotate(${obj.rotation}) scale(${obj.flipX ? -1 : 1},${obj.flipY ? -1 : 1})`"
           style="cursor: move;"
           @pointerdown.stop="startMove(obj.id, $event)"
         >

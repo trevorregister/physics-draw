@@ -2,7 +2,8 @@
   <g>
     <circle cx="0" :cy="cy" :r="r" fill="#f8fafc" stroke="#1e293b" stroke-width="2" />
     <line x1="0" :y1="cy" :x2="r" :y2="cy" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 3" />
-    <line x1="0" :y1="cy + r" x2="0" :y2="height / 2" stroke="#1e293b" stroke-width="2" />
+    <line :x1="-r" :y1="cy" :x2="-r" :y2="height / 2" stroke="#1e293b" stroke-width="2" />
+    <line :x1="r"  :y1="cy" :x2="r"  :y2="height / 2" stroke="#1e293b" stroke-width="2" />
   </g>
 </template>
 

@@ -6,6 +6,8 @@ export type ApparatusObjectType =
   | 'incline'
   | 'jagged-line'
   | 'pulley'
+  | 'atwood'
+  | 'half-atwood'
   | 'circle'
   | 'cart'
   | 'arrow'
@@ -37,6 +39,8 @@ export interface ApparatusObject {
   width: number
   height: number
   rotation: number
+  flipX?: boolean
+  flipY?: boolean
   labels: ObjectLabel[]
 }
 

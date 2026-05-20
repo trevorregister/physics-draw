@@ -12,6 +12,8 @@ import AppSpring from './objects/AppSpring.vue'
 import AppIncline from './objects/AppIncline.vue'
 import AppJaggedLine from './objects/AppJaggedLine.vue'
 import AppPulley from './objects/AppPulley.vue'
+import AppAtwood from './objects/AppAtwood.vue'
+import AppHalfAtwood from './objects/AppHalfAtwood.vue'
 import AppCircle from './objects/AppCircle.vue'
 import AppCart from './objects/AppCart.vue'
 import AppArrow from './objects/AppArrow.vue'
@@ -33,6 +35,8 @@ const COMPONENTS: Partial<Record<ApparatusObjectType, Component>> = {
   'incline': AppIncline,
   'jagged-line': AppJaggedLine,
   'pulley': AppPulley,
+  'atwood': AppAtwood,
+  'half-atwood': AppHalfAtwood,
   'circle': AppCircle,
   'cart': AppCart,
   'arrow': AppArrow,

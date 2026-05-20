@@ -116,7 +116,7 @@ const CATEGORIES: Category[] = [
       {
         type: 'spring',
         label: 'Spring',
-        icon: '<path d="M-12 0 L-9 0 L-6 -6 L-2 6 L2 -6 L6 6 L9 0 L12 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+        icon: '<path d="M -10 0 A 3.3 5 0 0 0 -3.3 0 A 3.3 5 0 0 0 3.3 0 A 3.3 5 0 0 0 10 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M -12 0 L -10 0 A 3.3 5 0 0 1 -3.3 0 A 3.3 5 0 0 1 3.3 0 A 3.3 5 0 0 1 10 0 L 12 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
       },
       {
         type: 'incline',
@@ -131,7 +131,17 @@ const CATEGORIES: Category[] = [
       {
         type: 'pulley',
         label: 'Pulley',
-        icon: '<circle r="10" fill="#f8fafc" stroke="currentColor" stroke-width="2"/><line x1="-10" y1="0" x2="10" y2="0" stroke="currentColor" stroke-width="1.5"/>',
+        icon: '<circle cx="0" cy="-4" r="8" fill="#f8fafc" stroke="currentColor" stroke-width="2"/><line x1="0" y1="-4" x2="8" y2="-4" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="0" y1="4" x2="0" y2="13" stroke="currentColor" stroke-width="1.5"/>',
+      },
+      {
+        type: 'atwood',
+        label: 'Atwood',
+        icon: '<circle cx="0" cy="-5" r="7" fill="#f8fafc" stroke="currentColor" stroke-width="2"/><line x1="0" y1="-5" x2="7" y2="-5" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="-7" y1="-5" x2="-7" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="-5" x2="7" y2="12" stroke="currentColor" stroke-width="1.5"/>',
+      },
+      {
+        type: 'half-atwood',
+        label: 'Half-Atwood',
+        icon: '<circle cx="5" cy="-4" r="6" fill="#f8fafc" stroke="currentColor" stroke-width="2"/><line x1="5" y1="-4" x2="11" y2="-4" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="-1" y1="-4" x2="-12" y2="-4" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="13" stroke="currentColor" stroke-width="1.5"/>',
       },
       {
         type: 'circle',

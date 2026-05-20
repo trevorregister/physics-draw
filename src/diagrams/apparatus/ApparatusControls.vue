@@ -40,6 +40,28 @@
             @change="onRotationChange($event)"
           />
         </div>
+
+        <div>
+          <label class="text-xs text-muted-foreground block mb-1">Flip</label>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              class="flex-1 py-1 rounded-md border text-xs transition-colors"
+              :class="selectedObj.flipX ? 'border-sky-500 bg-sky-50 text-sky-600' : 'border-border bg-background text-foreground hover:bg-muted'"
+              @click="apparatus.flipObject(selectedObj!.id, 'x')"
+            >
+              ↔ Horizontal
+            </button>
+            <button
+              type="button"
+              class="flex-1 py-1 rounded-md border text-xs transition-colors"
+              :class="selectedObj.flipY ? 'border-sky-500 bg-sky-50 text-sky-600' : 'border-border bg-background text-foreground hover:bg-muted'"
+              @click="apparatus.flipObject(selectedObj!.id, 'y')"
+            >
+              ↕ Vertical
+            </button>
+          </div>
+        </div>
       </template>
 
       <!-- Labels -->
@@ -192,6 +214,8 @@ const TYPE_NAMES: Partial<Record<ApparatusObjectType, string>> = {
   'incline': 'Incline',
   'jagged-line': 'Rough Surface',
   'pulley': 'Pulley',
+  'atwood': 'Atwood',
+  'half-atwood': 'Half-Atwood',
   'circle': 'Circle / Ball',
   'cart': 'Cart',
   'arrow': 'Arrow',
