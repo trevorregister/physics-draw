@@ -50,6 +50,19 @@
       <h2 class="text-sm font-semibold text-foreground">Labels</h2>
     </div>
     <div class="flex-1 px-3 py-3 space-y-0.5">
+      <!-- Custom label -->
+      <div class="flex items-center gap-1.5 px-2 pb-2 mb-1 border-b border-border">
+        <input
+          v-model="customKatex"
+          placeholder="LaTeX, e.g. F_{net}"
+          class="flex-1 min-w-0 rounded border border-input bg-background px-2 py-1 text-xs font-mono"
+        />
+        <div
+          draggable="true"
+          class="flex-shrink-0 px-2 py-1 rounded-md bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium cursor-grab active:cursor-grabbing transition-colors select-none"
+          @dragstart="onCustomDragStart"
+        >Drag</div>
+      </div>
       <div
         v-for="lbl in LABEL_BANK"
         :key="lbl.katex"
@@ -208,7 +221,7 @@ const LABEL_BANK = [
   { name: 'Weight', katex: 'F_g' },
   { name: 'Normal', katex: 'F_N' },
   { name: 'Friction', katex: 'F_f' },
-  { name: 'Tension', katex: 'T' },
+  { name: 'Tension', katex: 'F_T' },
   { name: 'Applied', katex: 'F_{app}' },
   { name: 'Accel.', katex: 'a' },
   { name: 'Velocity', katex: 'v' },
@@ -224,6 +237,8 @@ const LABEL_BANK = [
   { name: 'Distance d', katex: 'd' },
   { name: 'Time t', katex: 't' },
 ]
+
+const customKatex = ref('')
 
 // 'Common' is open by default
 const openCategories = ref<Set<string>>(new Set(['Common']))
@@ -245,4 +260,12 @@ function onLabelDragStart(e: DragEvent, katex: string) {
   e.dataTransfer!.setData('apparatus-type', 'standalone-label')
   e.dataTransfer!.setData('apparatus-label', katex)
 }
+
+function onCustomDragStart(e: DragEvent) {
+  if (!customKatex.value.trim()) { e.preventDefault(); return }
+  e.dataTransfer!.effectAllowed = 'copy'
+  e.dataTransfer!.setData('apparatus-type', 'standalone-label')
+  e.dataTransfer!.setData('apparatus-label', customKatex.value.trim())
+}
+
 </script>
