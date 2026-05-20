@@ -105,6 +105,21 @@
           placeholder="KaTeX label"
           @update:model-value="$emit('update-label', selectedVector.id, $event)"
         />
+        <div>
+          <p class="text-xs text-muted-foreground mb-1">Angle display</p>
+          <div class="flex gap-1">
+            <button
+              v-for="opt in ANGLE_DISPLAY_OPTIONS"
+              :key="opt.value"
+              type="button"
+              class="flex-1 py-1 text-xs rounded border transition-colors"
+              :class="(selectedVector.angleDisplay ?? 'none') === opt.value
+                ? 'bg-sky-500 border-sky-500 text-white'
+                : 'bg-background border-border text-foreground hover:bg-muted'"
+              @click="$emit('update-angle-display', selectedVector.id, opt.value)"
+            >{{ opt.label }}</button>
+          </div>
+        </div>
       </div>
 
       <!-- Object style -->
@@ -219,6 +234,7 @@ const emit = defineEmits<{
   delete: [id: string]
   select: [id: string]
   'update-label': [id: string, label: string]
+  'update-angle-display': [id: string, mode: NonNullable<FBDVector['angleDisplay']>]
   'set-object-style': [style: ObjectStyle]
   'set-snap': [enabled: boolean]
   'set-grid': [show: boolean]
@@ -244,6 +260,12 @@ const DIR_PRESETS = [
   { label: '↓', angle: 270 },
   { label: '←', angle: 180 },
   { label: '→', angle: 0 },
+]
+
+const ANGLE_DISPLAY_OPTIONS: { value: NonNullable<FBDVector['angleDisplay']>; label: string }[] = [
+  { value: 'none', label: 'Off' },
+  { value: 'horizontal', label: '∠ Horiz' },
+  { value: 'vertical', label: '∠ Vert' },
 ]
 
 const OBJECT_STYLES: { value: ObjectStyle; label: string }[] = [

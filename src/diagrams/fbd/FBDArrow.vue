@@ -84,6 +84,29 @@
       :y="labelY"
       :color="vector.color"
     />
+
+    <!-- Angle arc and label -->
+    <template v-if="arcData">
+      <path
+        :d="arcData.d"
+        fill="none"
+        :stroke="vector.color"
+        stroke-width="1.5"
+        stroke-opacity="0.85"
+        stroke-dasharray="4 3"
+        pointer-events="none"
+      />
+      <text
+        :x="arcData.labelX"
+        :y="arcData.labelY"
+        text-anchor="middle"
+        dominant-baseline="middle"
+        :fill="vector.color"
+        font-size="11"
+        font-family="sans-serif"
+        pointer-events="none"
+      >{{ arcData.displayAngle }}°</text>
+    </template>
   </g>
 </template>
 
@@ -125,5 +148,51 @@ const labelX = computed(() => {
 const labelY = computed(() => {
   const mag = Math.max(props.vector.magnitude, 1)
   return tipY.value + (dx.value / mag) * LABEL_RADIUS
+})
+
+const ARC_R = 40
+
+const arcData = computed(() => {
+  const mode = props.vector.angleDisplay ?? 'none'
+  if (mode === 'none') return null
+
+  const angle = props.vector.angle
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+
+  let displayAngle: number
+  let refAngle: number
+  let sweep: number
+
+  if (mode === 'horizontal') {
+    const a = angle % 180
+    displayAngle = Math.round(Math.min(a, 180 - a))
+    refAngle = angle > 90 && angle < 270 ? 180 : 0
+    const above = Math.sin(toRad(angle)) >= 0
+    sweep = refAngle === 0 ? (above ? 0 : 1) : (above ? 1 : 0)
+  } else {
+    const a = (angle + 90) % 180
+    displayAngle = Math.round(Math.min(a, 180 - a))
+    refAngle = angle > 0 && angle <= 180 ? 90 : 270
+    const right = Math.cos(toRad(angle)) >= 0
+    sweep = refAngle === 90 ? (right ? 1 : 0) : (right ? 0 : 1)
+  }
+
+  if (displayAngle < 1) return null
+
+  const startX = props.cx + ARC_R * Math.cos(toRad(refAngle))
+  const startY = props.cy - ARC_R * Math.sin(toRad(refAngle))
+  const endX = props.cx + ARC_R * Math.cos(toRad(angle))
+  const endY = props.cy - ARC_R * Math.sin(toRad(angle))
+  const d = `M ${startX} ${startY} A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${endX} ${endY}`
+
+  let diff = angle - refAngle
+  if (diff > 180) diff -= 360
+  if (diff < -180) diff += 360
+  const midAngle = refAngle + diff / 2
+  const LR = ARC_R + 14
+  const lx = props.cx + LR * Math.cos(toRad(midAngle))
+  const ly = props.cy - LR * Math.sin(toRad(midAngle))
+
+  return { d, displayAngle, labelX: lx, labelY: ly }
 })
 </script>

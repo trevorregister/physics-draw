@@ -38,6 +38,7 @@
         @delete="fbd.deleteVector($event)"
         @select="(id) => (selectedId = id)"
         @update-label="(id, label) => { fbd.updateVector(id, { label }); fbd.commitVectorUpdate() }"
+        @update-angle-display="(id, mode) => { fbd.updateVector(id, { angleDisplay: mode }); fbd.commitVectorUpdate() }"
         @set-object-style="fbd.setObjectStyle($event)"
         @set-snap="fbd.setSnapEnabled($event)"
         @set-grid="fbd.setShowGrid($event)"

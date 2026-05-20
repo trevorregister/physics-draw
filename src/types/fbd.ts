@@ -4,6 +4,7 @@ export interface FBDVector {
   magnitude: number
   label: string
   color: string
+  angleDisplay?: 'none' | 'horizontal' | 'vertical'
 }
 
 export type ObjectStyle = 'dot' | 'box' | 'circle'
