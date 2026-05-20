@@ -1,8 +1,12 @@
 import { ref, computed } from 'vue'
 
+function deepClone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value))
+}
+
 export function useUndoStack<T>(initial: T) {
   // Use plain arrays + a trigger ref to avoid Vue's deep-unwrap type conflicts
-  let stack: T[] = [structuredClone(initial)]
+  let stack: T[] = [deepClone(initial)]
   let pointer = 0
   const _version = ref(0)
 
@@ -13,7 +17,7 @@ export function useUndoStack<T>(initial: T) {
 
   function push(state: T) {
     stack = stack.slice(0, pointer + 1)
-    stack.push(structuredClone(state))
+    stack.push(deepClone(state))
     if (stack.length > 50) stack.shift()
     pointer = stack.length - 1
     _version.value++
@@ -23,7 +27,7 @@ export function useUndoStack<T>(initial: T) {
     if (pointer <= 0) return null
     pointer--
     _version.value++
-    return structuredClone(stack[pointer])
+    return deepClone(stack[pointer])
   }
 
   return { push, undo, canUndo }

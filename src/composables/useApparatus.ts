@@ -3,11 +3,11 @@ import type { ApparatusState, ApparatusObject, ApparatusObjectType, ObjectLabel 
 import { useUndoStack } from './useUndoStack'
 import { snapToIncrement } from './useSnap'
 
-const DEFAULT_DIMS: Record<ApparatusObjectType, [number, number]> = {
+export const DEFAULT_DIMS: Record<ApparatusObjectType, [number, number]> = {
   'line': [200, 4],
   'hatched-line': [200, 30],
   'box': [80, 80],
-  'spring': [120, 50],
+  'spring': [120, 80],
   'incline': [160, 120],
   'jagged-line': [200, 20],
   'pulley': [60, 60],

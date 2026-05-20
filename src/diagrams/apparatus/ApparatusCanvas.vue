@@ -133,7 +133,8 @@
 import { ref, computed } from 'vue'
 import type { ApparatusObjectType, ObjectLabel } from '@/types/apparatus'
 import type { useApparatus } from '@/composables/useApparatus'
-import { snapToIncrement } from '@/composables/useSnap'
+import { snapToIncrement, snapInclineCenter } from '@/composables/useSnap'
+import { DEFAULT_DIMS } from '@/composables/useApparatus'
 import ApparatusObjectRenderer from './ApparatusObjectRenderer.vue'
 import KaTeXLabel from '@/components/shared/KaTeXLabel.vue'
 
@@ -300,8 +301,14 @@ function onPointerMove(e: PointerEvent) {
     let x = dragStart.value.objX + dx
     let y = dragStart.value.objY + dy
     if (state.value.snapEnabled) {
-      x = snapToIncrement(x, state.value.gridSpacing)
-      y = snapToIncrement(y, state.value.gridSpacing)
+      const obj = state.value.objects.find((o) => o.id === dragObjectId.value)!
+      if (obj.type === 'incline') {
+        const snapped = snapInclineCenter(x, y, obj.width, obj.height, state.value.gridSpacing)
+        x = snapped.x; y = snapped.y
+      } else {
+        x = snapToIncrement(x, state.value.gridSpacing)
+        y = snapToIncrement(y, state.value.gridSpacing)
+      }
     }
     apparatus.moveObject(dragObjectId.value, x, y)
 
@@ -379,8 +386,13 @@ function onDrop(e: DragEvent) {
   if (!type || !svgEl.value) return
   const pt = clientToCanvas(e.clientX, e.clientY)
   const gs = state.value.gridSpacing
-  const x = state.value.snapEnabled ? snapToIncrement(pt.x, gs) : pt.x
-  const y = state.value.snapEnabled ? snapToIncrement(pt.y, gs) : pt.y
+  let x = state.value.snapEnabled ? snapToIncrement(pt.x, gs) : pt.x
+  let y = state.value.snapEnabled ? snapToIncrement(pt.y, gs) : pt.y
+  if (type === 'incline' && state.value.snapEnabled) {
+    const [iw, ih] = DEFAULT_DIMS['incline']
+    const snapped = snapInclineCenter(pt.x, pt.y, iw, ih, gs)
+    x = snapped.x; y = snapped.y
+  }
   const labelKatex = type === 'standalone-label'
     ? (e.dataTransfer?.getData('apparatus-label') || '')
     : undefined
