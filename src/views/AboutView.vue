@@ -11,16 +11,15 @@
           </div>
           <span class="font-semibold text-slate-800 text-lg">PhysicsDraw</span>
         </div>
-        <button
-          type="button"
+        <RouterLink
+          to="/"
           class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors"
-          @click="router.push('/')"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           Home
-        </button>
+        </RouterLink>
       </div>
     </header>
 
@@ -33,10 +32,10 @@
             <h1 class="text-2xl font-bold text-slate-900 mb-4">About PhysicsDraw</h1>
             <div class="space-y-4 text-slate-600 leading-relaxed">
               <p>
-                I built PhysicsDraw because it’s what I wished I had when I was in the classroom. Drawing something as simple as a free-body diagram or a motion map shouldn’t be so cumbersome. I figured out ways around that but not in a way that was easily sharable. 
+                I built PhysicsDraw because it's what I wished I had when I was in the classroom. Drawing something as simple as a free-body diagram or a motion map shouldn't be so cumbersome. I figured out ways around that but not in a way that was easily sharable.
               </p>
               <p>
-                I know y’all aren’t exactly awash in free time. Fighting with ad-hoc solutions, assuming you even have them, isn’t how you want to spend that time anyway. So PhysicsDraw is all about speed and efficiency. 
+                I know y'all aren't exactly awash in free time. Fighting with ad-hoc solutions, assuming you even have them, isn't how you want to spend that time anyway. So PhysicsDraw is all about speed and efficiency.
                 Each tool is built around the way physics teachers actually think about and explain concepts, not around general-purpose diagramming workflows.
               </p>
             </div>
@@ -49,7 +48,7 @@
                 I'm a former physics teacher turned fullstack developer. I hold a B.S. in Physics from Georgia Tech and an M.A. in Teaching Physics from Kennesaw State University, and spent seven years in the classroom teaching Conceptual Physics, AP Physics 1, and AP Physics C at high schools in the Atlanta area.
               </p>
               <p>
-                I transitioned into EdTech by joining the Pivot Interactives team as a customer support specialist. Over time I then joined the engineering team as a full stack developer. I’m now able to use those skills to build tools that I know will be useful for other teachers.
+                I transitioned into EdTech by joining the Pivot Interactives team as a customer support specialist. Over time I then joined the engineering team as a full stack developer. I'm now able to use those skills to build tools that I know will be useful for other teachers.
               </p>
               <p>
                 PhysicsDraw is a personal project that sits at the intersection of those two careers. You can find out more about me at <a href="https://www.trevorregister.com" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-700 underline underline-offset-2">trevorregister.com</a>.
@@ -129,7 +128,23 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useHead } from '@unhead/vue'
+import { SITE_URL } from '@/site'
 
-const router = useRouter()
+const DESCRIPTION = 'Learn about PhysicsDraw and its creator, Trevor Register — a former physics teacher and full-stack developer building tools for physics educators.'
+
+useHead({
+  title: 'About | PhysicsDraw',
+  meta: [
+    { name: 'description', content: DESCRIPTION },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/about` },
+    { property: 'og:title', content: 'About | PhysicsDraw' },
+    { property: 'og:description', content: DESCRIPTION },
+    { name: 'twitter:card', content: 'summary' },
+    { name: 'twitter:title', content: 'About | PhysicsDraw' },
+    { name: 'twitter:description', content: DESCRIPTION },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/about` }],
+})
 </script>

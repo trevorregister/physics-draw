@@ -27,13 +27,12 @@
             </svg>
             Buy me a coffee
           </a>
-          <button
-            type="button"
+          <RouterLink
+            to="/about"
             class="text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
-            @click="router.push('/about')"
           >
             About
-          </button>
+          </RouterLink>
         </div>
       </div>
     </header>
@@ -56,13 +55,12 @@
           </div>
           <h2 class="text-lg font-semibold text-slate-800">{{ tool.title }}</h2>
           <p class="text-slate-500 text-sm mt-1 leading-relaxed">{{ tool.description }}</p>
-          <button
-            type="button"
-            class="mt-5 w-full py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium transition-colors"
-            @click="router.push(tool.path)"
+          <RouterLink
+            :to="tool.path"
+            class="mt-5 block w-full py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium transition-colors text-center"
           >
             Open
-          </button>
+          </RouterLink>
         </div>
 
         <div
@@ -88,10 +86,26 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { h } from 'vue'
+import { useHead } from '@unhead/vue'
+import { SITE_URL } from '@/site'
 
-const router = useRouter()
+const DESCRIPTION = 'Free online physics diagram tools for teachers. Build free body diagrams, motion maps, and apparatus diagrams — designed around the way physics teachers think.'
+
+useHead({
+  title: 'PhysicsDraw — Physics Diagram Tools for Teachers',
+  meta: [
+    { name: 'description', content: DESCRIPTION },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/` },
+    { property: 'og:title', content: 'PhysicsDraw — Physics Diagram Tools for Teachers' },
+    { property: 'og:description', content: DESCRIPTION },
+    { name: 'twitter:card', content: 'summary' },
+    { name: 'twitter:title', content: 'PhysicsDraw — Physics Diagram Tools for Teachers' },
+    { name: 'twitter:description', content: DESCRIPTION },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/` }],
+})
 
 const ArrowIcon = () =>
   h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', class: 'w-6 h-6' }, [
