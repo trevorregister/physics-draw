@@ -9,7 +9,7 @@ export default createRouter({
       component: () => import('@/views/HomeView.vue'),
     },
     {
-      path: '/fbd',
+      path: '/free-body-diagram',
       name: 'fbd',
       component: () => import('@/views/FBDView.vue'),
     },
@@ -17,6 +17,11 @@ export default createRouter({
       path: '/motion-map',
       name: 'motion-map',
       component: () => import('@/views/MotionMapView.vue'),
+    },
+    {
+      path: '/apparatus',
+      name: 'apparatus',
+      component: () => import('@/views/ApparatusView.vue'),
     },
   ],
 })

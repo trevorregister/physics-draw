@@ -82,17 +82,18 @@
         </div>
 
         <!-- Show grid toggle -->
-        <label class="flex items-center justify-between text-sm cursor-pointer">
-          <span class="text-foreground">Show grid</span>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-foreground">Show grid</span>
           <button
             type="button"
-            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
             :class="state.showGrid ? 'bg-sky-500' : 'bg-muted'"
             @click="$emit('set-show-grid', !state.showGrid)"
           >
-            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showGrid ? 'translate-x-5' : 'translate-x-0.5'" />
+            <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform"
+              :class="state.showGrid ? 'translate-x-[18px]' : 'translate-x-0.5'" />
           </button>
-        </label>
+        </div>
       </section>
 
       <!-- Selected Dot Controls -->
@@ -112,11 +113,12 @@
             <p class="text-xs font-medium text-foreground">Velocity direction</p>
             <button
               type="button"
-              class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+              class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
               :class="selectedDot.velocity.visible ? 'bg-sky-500' : 'bg-muted'"
               @click="$emit('update-velocity', selectedDot.id, { ...selectedDot.velocity, visible: !selectedDot.velocity.visible })"
             >
-              <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="selectedDot.velocity.visible ? 'translate-x-5' : 'translate-x-0.5'" />
+              <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform"
+                :class="selectedDot.velocity.visible ? 'translate-x-[18px]' : 'translate-x-0.5'" />
             </button>
           </div>
           <div class="flex gap-1.5">
@@ -133,83 +135,35 @@
           </div>
         </div>
 
-        <!-- Acceleration -->
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between">
-            <p class="text-xs font-medium text-rose-600">Acceleration</p>
-            <button
-              type="button"
-              class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1"
-              :class="selectedDot.acceleration.visible ? 'bg-rose-500' : 'bg-muted'"
-              @click="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, visible: !selectedDot.acceleration.visible })"
-            >
-              <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="selectedDot.acceleration.visible ? 'translate-x-5' : 'translate-x-0.5'" />
-            </button>
-          </div>
-          <div class="flex gap-1.5">
-            <button
-              v-for="dir in accelDirOptions"
-              :key="dir.val"
-              type="button"
-              class="flex-1 py-1 text-xs rounded-md border transition-colors"
-              :class="selectedDot.acceleration.direction === dir.val
-                ? 'bg-rose-500 border-rose-500 text-white'
-                : 'bg-background border-border text-foreground hover:bg-muted'"
-              @click="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, direction: dir.val as 1 | -1 })"
-            >{{ dir.label }}</button>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-muted-foreground w-12">Magnitude</span>
-            <input
-              type="range"
-              min="0"
-              max="10"
-              step="0.5"
-              :value="selectedDot.acceleration.magnitude"
-              class="flex-1 accent-rose-500"
-              @input="$emit('update-acceleration', selectedDot.id, { ...selectedDot.acceleration, magnitude: +($event.target as HTMLInputElement).value })"
-            />
-            <span class="text-xs text-muted-foreground w-6 text-right">{{ selectedDot.acceleration.magnitude }}</span>
-          </div>
-        </div>
       </section>
 
       <!-- Global Vector Controls -->
       <section class="space-y-2">
         <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Display</p>
-        <label class="flex items-center justify-between text-sm cursor-pointer">
-          <span class="text-foreground">Velocity vectors</span>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-foreground">Velocity vectors</span>
           <button
             type="button"
-            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
             :class="state.showAllVelocity ? 'bg-sky-500' : 'bg-muted'"
             @click="$emit('set-show-all-velocity', !state.showAllVelocity)"
           >
-            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showAllVelocity ? 'translate-x-5' : 'translate-x-0.5'" />
+            <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform"
+              :class="state.showAllVelocity ? 'translate-x-[18px]' : 'translate-x-0.5'" />
           </button>
-        </label>
-        <label class="flex items-center justify-between text-sm cursor-pointer">
-          <span class="text-foreground">Acceleration vectors</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-foreground">Time labels</span>
           <button
             type="button"
-            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
-            :class="state.showAllAccel ? 'bg-sky-500' : 'bg-muted'"
-            @click="$emit('set-show-all-accel', !state.showAllAccel)"
-          >
-            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showAllAccel ? 'translate-x-5' : 'translate-x-0.5'" />
-          </button>
-        </label>
-        <label class="flex items-center justify-between text-sm cursor-pointer">
-          <span class="text-foreground">Time labels</span>
-          <button
-            type="button"
-            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1"
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
             :class="state.showLabels ? 'bg-sky-500' : 'bg-muted'"
             @click="$emit('set-show-labels', !state.showLabels)"
           >
-            <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform" :class="state.showLabels ? 'translate-x-5' : 'translate-x-0.5'" />
+            <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform"
+              :class="state.showLabels ? 'translate-x-[18px]' : 'translate-x-0.5'" />
           </button>
-        </label>
+        </div>
       </section>
 
     </div>
@@ -297,5 +251,4 @@ const accelDirOptions = computed(() =>
     ? [{ label: '→ Right', val: 1 }, { label: '← Left', val: -1 }]
     : [{ label: '↓ Down', val: 1 }, { label: '↑ Up', val: -1 }]
 )
-
 </script>

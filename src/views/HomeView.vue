@@ -62,12 +62,18 @@ const DotLineIcon = () =>
     h('circle', { cx: '17', cy: '12', r: '2', fill: 'currentColor' }),
   ])
 
+const ApparatusIcon = () =>
+  h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', class: 'w-6 h-6' }, [
+    h('rect', { x: '3', y: '8', width: '8', height: '8' }),
+    h('path', { d: 'M11 12 L13 12 L14 10 L15 14 L16 10 L17 14 L18 12 L21 12', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+  ])
+
 const TOOLS = [
   {
     name: 'fbd',
     title: 'Free Body Diagram',
     description: 'Draw all forces acting on an object. Add labeled force vectors with one click and drag to adjust direction and magnitude.',
-    path: '/fbd',
+    path: '/free-body-diagram',
     icon: ArrowIcon,
   },
   {
@@ -76,6 +82,13 @@ const TOOLS = [
     description: 'Visualize an object\'s position at equal time intervals. Show velocity vectors and acceleration to explore kinematics.',
     path: '/motion-map',
     icon: DotLineIcon,
+  },
+  {
+    name: 'apparatus',
+    title: 'Apparatus Diagram',
+    description: 'Build physics scenario diagrams from a library of objects — boxes, springs, pulleys, inclines, and more.',
+    path: '/apparatus',
+    icon: ApparatusIcon,
   },
 ]
 </script>
