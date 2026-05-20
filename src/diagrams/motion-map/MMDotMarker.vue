@@ -41,8 +41,6 @@
 import { computed } from 'vue'
 import type { MMDot, MMOrientation } from '@/types'
 
-const ACCEL_OFFSET = 60
-
 const props = defineProps<{
   dot: MMDot
   orientation: MMOrientation
@@ -88,23 +86,6 @@ const dotY = computed(() =>
 const velDelta = computed(() => props.dot.velocity.direction * props.velocityLength)
 const velTipX = computed(() => (isHorizontal.value ? dotX.value + velDelta.value : dotX.value))
 const velTipY = computed(() => (isHorizontal.value ? dotY.value : dotY.value + velDelta.value))
-
-// Acceleration: anchored to axis projection of the dot (same gridIndex position on axis)
-const accelDelta = computed(
-  () => props.dot.acceleration.direction * props.dot.acceleration.magnitude * props.gridSpacing
-)
-const accelBaseX = computed(() =>
-  isHorizontal.value ? dotX.value : props.baseline - ACCEL_OFFSET
-)
-const accelBaseY = computed(() =>
-  isHorizontal.value ? props.baseline + ACCEL_OFFSET : dotY.value
-)
-const accelTipX = computed(() =>
-  isHorizontal.value ? dotX.value + accelDelta.value : props.baseline - ACCEL_OFFSET
-)
-const accelTipY = computed(() =>
-  isHorizontal.value ? props.baseline + ACCEL_OFFSET : dotY.value + accelDelta.value
-)
 
 // Time label: placed to avoid dashed connector
 // Horizontal above axis (laneOffset > 0): label above dot

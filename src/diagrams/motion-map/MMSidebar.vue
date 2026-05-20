@@ -246,9 +246,4 @@ const velocityDirOptions = computed(() =>
     : [{ label: '↓ Down', val: 1 }, { label: '↑ Up', val: -1 }]
 )
 
-const accelDirOptions = computed(() =>
-  props.state.orientation === 'horizontal'
-    ? [{ label: '→ Right', val: 1 }, { label: '← Left', val: -1 }]
-    : [{ label: '↓ Down', val: 1 }, { label: '↑ Up', val: -1 }]
-)
 </script>

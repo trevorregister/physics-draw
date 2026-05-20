@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
+import { ViteSSG } from 'vite-ssg'
 import './assets/index.css'
 import 'katex/dist/katex.min.css'
-import router from './router'
+import { routes } from './router'
 import App from './App.vue'
 
-createApp(App).use(router).mount('#app')
+export const createApp = ViteSSG(App, { routes })
