@@ -26,6 +26,7 @@
       stroke-width="8"
       stroke-opacity="0.2"
       stroke-linecap="round"
+      data-no-export="true"
     />
 
     <!-- Vector shaft -->
@@ -73,6 +74,7 @@
       stroke="white"
       stroke-width="1.5"
       pointer-events="none"
+      data-no-export="true"
     />
 
     <!-- KaTeX label offset from tip -->

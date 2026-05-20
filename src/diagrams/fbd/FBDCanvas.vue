@@ -55,6 +55,7 @@
         stroke-width="2"
         stroke-dasharray="6 4"
         pointer-events="none"
+        data-no-export="true"
       />
 
       <!-- Snap angle hint -->
@@ -65,6 +66,7 @@
         font-size="11"
         fill="#64748b"
         pointer-events="none"
+        data-no-export="true"
       >{{ ghost.angle }}°</text>
 
       <!-- Center object -->

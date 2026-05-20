@@ -126,7 +126,7 @@
       />
 
       <!-- Hover preview: dashed alignment line + ghost dot -->
-      <template v-if="hoverSnap">
+      <g v-if="hoverSnap" data-no-export="true">
         <line
           v-if="hoverSnap.laneOffset !== 0"
           :x1="hoverDotX"
@@ -146,11 +146,12 @@
           opacity="0.4"
           pointer-events="none"
         />
-      </template>
+      </g>
 
       <!-- Click hint when empty -->
       <text
         v-if="state.dots.length === 0"
+        data-no-export="true"
         :x="W / 2"
         :y="isHorizontal ? BASELINE_Y - 30 : H / 2 - 30"
         text-anchor="middle"
