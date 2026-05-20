@@ -41,7 +41,7 @@
     <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-12">
       <div class="mb-10">
         <h1 class="text-3xl font-bold text-slate-900">Diagram Tools</h1>
-        <p class="text-slate-500 mt-2">Create clear physics diagrams for the classroom.</p>
+        <p class="text-slate-500 mt-2">Tools to help you efficiently create a variety of diagrams for teaching physics.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

@@ -1,11 +1,11 @@
 <template>
   <aside class="w-64 flex-shrink-0 flex flex-col border-r border-border bg-background overflow-y-auto">
+
+    <!-- Objects section -->
     <div class="px-4 py-3 border-b border-border">
       <h2 class="text-sm font-semibold text-foreground">Objects</h2>
     </div>
-
-    <div class="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-      <!-- Object categories -->
+    <div class="px-3 py-3 space-y-2 border-b border-border">
       <div v-for="cat in CATEGORIES" :key="cat.name">
         <button
           type="button"
@@ -43,39 +43,25 @@
           </template>
         </div>
       </div>
+    </div>
 
-      <!-- Label bank -->
-      <div>
-        <button
-          type="button"
-          class="w-full flex items-center justify-between px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
-          @click="toggleCategory('label-bank')"
-        >
-          Label Bank
-          <svg
-            width="12" height="12" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2"
-            :class="openCategories.has('label-bank') ? 'rotate-180' : ''"
-            class="transition-transform"
-          >
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
-        </button>
-
-        <div v-if="openCategories.has('label-bank')" class="mt-1 space-y-0.5">
-          <div
-            v-for="lbl in LABEL_BANK"
-            :key="lbl.katex"
-            draggable="true"
-            class="flex items-center gap-2.5 px-2 py-1.5 rounded-md cursor-grab hover:bg-muted/60 transition-colors active:cursor-grabbing"
-            @dragstart="(e) => onLabelDragStart(e, lbl.katex)"
-          >
-            <span class="text-xs font-mono text-foreground w-20 truncate">{{ lbl.name }}</span>
-            <span class="text-xs text-muted-foreground font-mono">{{ lbl.katex }}</span>
-          </div>
-        </div>
+    <!-- Labels section -->
+    <div class="px-4 py-3 border-b border-border">
+      <h2 class="text-sm font-semibold text-foreground">Labels</h2>
+    </div>
+    <div class="flex-1 px-3 py-3 space-y-0.5">
+      <div
+        v-for="lbl in LABEL_BANK"
+        :key="lbl.katex"
+        draggable="true"
+        class="flex items-center gap-2.5 px-2 py-1.5 rounded-md cursor-grab hover:bg-muted/60 transition-colors active:cursor-grabbing"
+        @dragstart="(e) => onLabelDragStart(e, lbl.katex)"
+      >
+        <span class="text-xs text-foreground w-20 truncate">{{ lbl.name }}</span>
+        <span class="text-xs text-muted-foreground font-mono">{{ lbl.katex }}</span>
       </div>
     </div>
+
   </aside>
 </template>
 
