@@ -215,6 +215,7 @@ const TYPE_NAMES: Partial<Record<ApparatusObjectType, string>> = {
   'jagged-line': 'Rough Surface',
   'pulley': 'Pulley',
   'atwood': 'Atwood',
+  'atwood-asym': 'Atwood (uneven)',
   'half-atwood': 'Half-Atwood',
   'circle': 'Circle / Ball',
   'cart': 'Cart',

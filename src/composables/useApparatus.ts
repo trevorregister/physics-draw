@@ -12,6 +12,7 @@ export const DEFAULT_DIMS: Record<ApparatusObjectType, [number, number]> = {
   'jagged-line': [200, 20],
   'pulley': [80, 160],
   'atwood': [80, 160],
+  'atwood-asym': [80, 160],
   'half-atwood': [160, 160],
   'circle': [60, 60],
   'cart': [120, 60],

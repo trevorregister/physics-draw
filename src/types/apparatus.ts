@@ -7,6 +7,7 @@ export type ApparatusObjectType =
   | 'jagged-line'
   | 'pulley'
   | 'atwood'
+  | 'atwood-asym'
   | 'half-atwood'
   | 'circle'
   | 'cart'
